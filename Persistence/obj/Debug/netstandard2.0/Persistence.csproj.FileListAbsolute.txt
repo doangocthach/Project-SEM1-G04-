@@ -1,0 +1,9 @@
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1\Project-SEM1-G04\Persistence\bin\Debug\netstandard2.0\Persistence.deps.json
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1\Project-SEM1-G04\Persistence\bin\Debug\netstandard2.0\Persistence.dll
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1\Project-SEM1-G04\Persistence\bin\Debug\netstandard2.0\Persistence.pdb
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1\Project-SEM1-G04\Persistence\obj\Debug\netstandard2.0\Persistence.csprojAssemblyReference.cache
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1\Project-SEM1-G04\Persistence\obj\Debug\netstandard2.0\Persistence.csproj.CoreCompileInputs.cache
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1\Project-SEM1-G04\Persistence\obj\Debug\netstandard2.0\Persistence.AssemblyInfoInputs.cache
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1\Project-SEM1-G04\Persistence\obj\Debug\netstandard2.0\Persistence.AssemblyInfo.cs
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1\Project-SEM1-G04\Persistence\obj\Debug\netstandard2.0\Persistence.dll
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1\Project-SEM1-G04\Persistence\obj\Debug\netstandard2.0\Persistence.pdb

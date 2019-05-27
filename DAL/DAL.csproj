@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Persistence\Persistence.csproj" />
+  </ItemGroup>
+
+<ItemGroup>
+    <EmbeddedResource Include=".\ConnectionString.txt">
+      <Link>./ConnectionString.txt</Link>
+    </EmbeddedResource>
+    <None Include=".\ConnectionString.txt" CopyToOutputDirectory="Always">
+      <Pack>True</Pack>
+      <PackagePath>.</PackagePath>
+    </None>
+  </ItemGroup>
+
+    <ItemGroup>
+    <PackageReference Include="mysql.data" Version="8.0.16" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+  </ItemGroup>
+  
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+</Project>
