@@ -31,14 +31,13 @@ namespace DAL
         public List<Items> GetItems()
         {
             query = $"select * from Items;";
+            DBHelper.OpenConnection();
             MySqlCommand command = new MySqlCommand(query, connection);
             List<Items> items = null;
-            using (MySqlDataReader reader1 = command.ExecuteReader())
+            reader = command.ExecuteReader();
+            if(reader != null)
             {
-                if (reader1 != null)
-                {
-                    items = GetItemsInfo(reader);
-                }
+                items = GetItemsInfo(reader);
             }
             
             DBHelper.CloseConnection();
@@ -52,7 +51,6 @@ namespace DAL
                 Items item = new Items();
                 item = GetItem(reader);
                 listItems.Add(item);
-                // Console.WriteLine(listItems.Count);
             }
             return listItems;
         }

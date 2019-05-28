@@ -7,41 +7,45 @@ namespace DAL
     public class DBHelper
     {
         private static MySqlConnection connection;
-        public static MySqlConnection GetConnection()
+        private static string conString;
+        public static MySqlConnection OpenConnection()
         {
-            string connectionString;
             try
             {
-                FileStream fileStream = File.OpenRead("ConnectionString.txt");
-                using (StreamReader reader = new StreamReader(fileStream))
+                if (conString == null)
                 {
-                    connectionString = reader.ReadLine();
+                    using (FileStream fileStream = File.OpenRead("ConnectionString.txt"))
+                    {
+                        using (StreamReader reader = new StreamReader(fileStream))
+                        {
+                            conString = reader.ReadLine();
+                        }
+                    }
                 }
-                fileStream.Close();
+                Console.WriteLine(conString);
+                return OpenConnection(conString);
             }
-            catch (System.Exception)
+            catch(Exception ex)
             {
-                Console.WriteLine("Error File connectionString.txt");
-                return null;
-            }
-            try
-            {
-                connection = new MySqlConnection { ConnectionString = connectionString };
-                return connection;
-            }
-            catch (System.Exception)
-            {
+                Console.WriteLine(ex.ToString());
                 return null;
             }
         }
-        public static MySqlConnection OpenConnection()
+        public static MySqlConnection OpenConnection(string connectionString)
         {
-            if (connection == null)
+            try
             {
-                GetConnection();
+                MySqlConnection connection = new MySqlConnection
+                {
+                    ConnectionString = connectionString
+                };
+                connection.Open();
+                return connection;
             }
-            connection.Open();
-            return connection;
+            catch(Exception ex)
+            {
+                return null;
+            }
         }
         public static void CloseConnection()
         {

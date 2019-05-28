@@ -6,10 +6,10 @@ namespace BL
 {
     public class CustomerBL
     {
-        CustomerDAL cusDAL = new CustomerDAL();
-
+        private CustomerDAL cusDAL = new CustomerDAL();
         public Customer GetCustomerByUsernameAndPassword(string userName, string password)
         {
+            Console.WriteLine("ABC");
             return cusDAL.GetCustomerByUsernameAndPassword(userName, password);
         }
 

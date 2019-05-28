@@ -19,9 +19,6 @@ namespace PL_Console
         private Customer customer = new Customer();
         private List<Items> items = new List<Items>();
 
-
-
-
         public void MainMenu()
         {
             while (true)
@@ -573,9 +570,7 @@ namespace PL_Console
 
         public void LoginMenu()
         {
-
             CustomerBL cuBL = new CustomerBL();
-
             string userName = null;
             string password = null;
             while (true)
@@ -601,7 +596,7 @@ namespace PL_Console
                 }
                 catch (System.Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Console.WriteLine("Loi PL " + ex.Message);
                     Console.ReadKey();
                     LoginMenu();
                 }

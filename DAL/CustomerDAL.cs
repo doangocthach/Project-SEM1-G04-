@@ -8,7 +8,7 @@ namespace DAL
     public class CustomerDAL
     {
         private MySqlConnection connection;
-        // private MySqlDataReader reader;
+        private MySqlDataReader reader;
         private string query;
         public CustomerDAL()
         {
@@ -17,39 +17,39 @@ namespace DAL
 
         public Customer GetCustomerByUsernameAndPassword(string userName, string password)
         {
-            MySqlDataReader reader;
+            
             if (connection.State == System.Data.ConnectionState.Closed)
             {
                 connection.Open();
             }
-
+            
+            Console.WriteLine(connection.State);
             query = @"select * from Customers where  userName = '" + userName + "' and userPassword = '" + password + "';";
-
-            MySqlCommand command = new MySqlCommand(query, connection);
+            Console.WriteLine(query);
             Customer customer = null;
-            using (MySqlDataReader reader1 = command.ExecuteReader())
+            
+            DBHelper.OpenConnection();
+            MySqlCommand command = new MySqlCommand(query, connection);
+            reader= command.ExecuteReader();
+            Console.WriteLine(query);
+            if(reader.Read())
             {
-                
-                if (reader1.Read())
-                {
-                    customer = GetCustomer(reader1);
-                }
+                customer = GetCustomer(reader);
             }
-            // reader = command.ExecuteReader();
 
-            // reader.Close();
             DBHelper.CloseConnection();
             return customer;
         }
         public decimal GetMoneyByCustomerId(int? customerId)
         {
-            MySqlDataReader reader;
             if (connection.State == System.Data.ConnectionState.Closed)
             {
                 connection.Open();
             }
             query = @"select Money from Customers where CusID = " + customerId + ";";
-            reader = DBHelper.ExecQuery(query);
+            MySqlCommand command = new MySqlCommand(query,connection);
+            DBHelper.OpenConnection();
+            reader = command.ExecuteReader();
             Customer customer = null;
             if (reader.Read())
             {
