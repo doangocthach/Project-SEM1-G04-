@@ -12,13 +12,15 @@ namespace DAL
         private MySqlDataReader reader;
         public ItemDAL()
         {
-            connection = DBHelper.OpenConnection();
+            // connection = DBHelper.OpenConnection();
         }
         public Items GetItemByID(int? ITemID)
         {
+          
             query = $"select * from Items where ItemID = " + ITemID + ";";
-            reader = DBHelper.ExecQuery(query);
+            reader = DBHelper.ExecQuery(query,DBHelper.OpenConnection());
             Items item = null;
+            
             if (reader.Read())
             {
                 item = GetItem(reader);
@@ -31,15 +33,12 @@ namespace DAL
         public List<Items> GetItems()
         {
             query = $"select * from Items;";
-            DBHelper.OpenConnection();
-            MySqlCommand command = new MySqlCommand(query, connection);
+            reader = DBHelper.ExecQuery(query,DBHelper.OpenConnection());
             List<Items> items = null;
-            reader = command.ExecuteReader();
-            if(reader != null)
+            if (reader != null)
             {
                 items = GetItemsInfo(reader);
             }
-            
             DBHelper.CloseConnection();
             return items;
         }

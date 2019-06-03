@@ -22,16 +22,13 @@ namespace DAL.TEST
         [Theory]
         [InlineData("customer_01", "12345688889")]
         [InlineData("customer_02", "1212688889")]
-        [InlineData("customer_03", "1212688889")]
-        [InlineData("customer_04", "1212688889")]
-        [InlineData("customer_05", "1212688889")]
+        [InlineData("@#!@!@#!@#", "!@#!@#!@#$")]
         [InlineData("customer_06", "1212688889")]
         public void GetCustomerByUsernamAndPasswordTest2(string username, string password)
         {
             Customer cs = customerDAL.GetCustomerByUsernameAndPassword(username, password);
             Assert.Null(cs);
         }
-
         [Theory]
         [InlineData(1)]
         [InlineData(2)]

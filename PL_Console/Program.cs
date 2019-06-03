@@ -6,6 +6,8 @@ namespace PL_Console
     {
         static void Main(string[] args)
         {
+            Console.Clear();
+            Console.WriteLine("=================== WELCOME TO VTCA CAFFE !=======================");
             Menu menu = new Menu();
             menu.MainMenu();
         }

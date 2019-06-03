@@ -17,22 +17,14 @@ namespace DAL
 
         public Customer GetCustomerByUsernameAndPassword(string userName, string password)
         {
-            
-            if (connection.State == System.Data.ConnectionState.Closed)
-            {
-                connection.Open();
-            }
-            
-            Console.WriteLine(connection.State);
+
             query = @"select * from Customers where  userName = '" + userName + "' and userPassword = '" + password + "';";
-            Console.WriteLine(query);
+
             Customer customer = null;
+
+            reader = DBHelper.ExecQuery(query, DBHelper.OpenConnection());
             
-            DBHelper.OpenConnection();
-            MySqlCommand command = new MySqlCommand(query, connection);
-            reader= command.ExecuteReader();
-            Console.WriteLine(query);
-            if(reader.Read())
+            if (reader.Read())
             {
                 customer = GetCustomer(reader);
             }
@@ -42,21 +34,20 @@ namespace DAL
         }
         public decimal GetMoneyByCustomerId(int? customerId)
         {
-            if (connection.State == System.Data.ConnectionState.Closed)
-            {
-                connection.Open();
-            }
+            // if (connection.State == System.Data.ConnectionState.Closed)
+            // {
+            //     connection.Open();
+            // }
+            
             query = @"select Money from Customers where CusID = " + customerId + ";";
-            MySqlCommand command = new MySqlCommand(query,connection);
-            DBHelper.OpenConnection();
-            reader = command.ExecuteReader();
+            reader = DBHelper.ExecQuery(query,DBHelper.OpenConnection());
             Customer customer = null;
             if (reader.Read())
             {
                 customer = GetMoney(reader);
             }
-
             DBHelper.CloseConnection();
+            
             return customer.Money;
         }
 

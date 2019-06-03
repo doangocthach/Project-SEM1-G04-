@@ -22,7 +22,7 @@ namespace DAL
                         }
                     }
                 }
-                Console.WriteLine(conString);
+                
                 return OpenConnection(conString);
             }
             catch(Exception ex)
@@ -31,6 +31,7 @@ namespace DAL
                 return null;
             }
         }
+        
         public static MySqlConnection OpenConnection(string connectionString)
         {
             try
@@ -42,7 +43,7 @@ namespace DAL
                 connection.Open();
                 return connection;
             }
-            catch(Exception ex)
+            catch(Exception )
             {
                 return null;
             }
@@ -54,7 +55,7 @@ namespace DAL
                 connection.Close();
             }
         }
-        public static MySqlDataReader ExecQuery(string query)
+        public static MySqlDataReader ExecQuery(string query, MySqlConnection connection)
         {
             MySqlCommand command = new MySqlCommand(query, connection);
             return command.ExecuteReader();

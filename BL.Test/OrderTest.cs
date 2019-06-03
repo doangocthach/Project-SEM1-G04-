@@ -1,16 +1,24 @@
-using System;
 using Xunit;
-using Persistence.Model;
-using MySql.Data.MySqlClient;
 using System.Collections.Generic;
+using BL;
+using MySql.Data.MySqlClient;
+using Persistence.Model;
 
-namespace DAL.TEST
+namespace BL.Test
 {
-    public class OrderTest
+   public class OrderTest
     {
+        OrderBL oBL = new OrderBL();
 
-        OrderDAL oDAl = new OrderDAL();
-        [Fact]
+        [Theory]
+        [InlineData(2)]
+        public void Test_GetALLOrdersByIDUser(int id)
+        {
+            var orders = oBL.GetOrdersByCustomerId(id);
+            Assert.NotNull(orders);
+        }
+
+             [Fact]
 
         public void Create_test()
         {
@@ -24,14 +32,9 @@ namespace DAL.TEST
             items.ItemID = 1;
             items.ItemPrice = 2;
             or.Items.Add(items);
-            Assert.True(oDAl.CreateOrder(or));
+            Assert.True(oBL.CreateOrder(or));
         }
-        [Theory]
-        [InlineData(2)]
-        public void GetOrdersByCustomerIdTest(int customerId)
-        {
-            var TEST = oDAl.GetOrdersByCustomerId(customerId);
-            Assert.NotNull(TEST);
-        }
+
     }
+
 }

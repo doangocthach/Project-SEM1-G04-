@@ -18,23 +18,26 @@ namespace DAL
             connection = DBHelper.OpenConnection();
         }
 
+
         public bool CreateOrder(Orders order)
         {
+            Customer cu = new Customer();
             if (connection.State == System.Data.ConnectionState.Closed)
             {
                 connection.Open();
             }
+            // DBHelper.OpenConnection();
             bool result = false;
             MySqlCommand command = new MySqlCommand();
             command.Connection = connection;
-
             command.CommandText = @"lock tables Items write, Orders write,OrderDetail write;";
             command.ExecuteNonQuery();
-
             MySqlTransaction transactions = connection.BeginTransaction();
+            // order.Customer = new Customer();
             command.Transaction = transactions;
             try
             {
+                // int customId = order.Customer.CusID;
                 int? orderId = 0;
 
                 command.CommandText = @"insert into Orders(OrderDate,Note,OrderStatus,CusID) values (@OrderDate,@Note,@OrderStatus,@CusID);";
@@ -57,7 +60,6 @@ namespace DAL
                 {
                     command.Parameters.Clear();
                     command.CommandText = @"insert into OrderDetail(OrderID,ItemID) values(" + order.OrderID + ", " + item.ItemID + ");";
-                    //+ "," + item.ItemCount 
                     command.ExecuteNonQuery();
                 }
                 transactions.Commit();
@@ -80,13 +82,10 @@ namespace DAL
         public List<Orders> GetOrdersByCustomerId(int customerId)
         {
 
-            if (connection.State == System.Data.ConnectionState.Closed)
-            {
-                connection.Open();
-            }
+
             query = @"select * from Orders where CusID = " + customerId + ";";
 
-            reader = DBHelper.ExecQuery(query);
+            reader = DBHelper.ExecQuery(query, DBHelper.OpenConnection());
             List<Orders> orders = null;
             if (reader != null)
             {
@@ -151,19 +150,6 @@ namespace DAL
             }
             return listOrders;
         }
-
-        private Orders GetOrder(MySqlDataReader reader)
-        {
-            // Customer customer = new Customer();
-            Orders order = new Orders();
-            order.OrderID = reader.GetInt32("OrderID");
-            order.OrderDate = reader.GetDateTime("OrderDate");
-            order.Note = reader.GetString("Note");
-            order.Status = reader.GetString("OrderStatus");
-            order.Customer = new Customer();
-            order.Customer.CusID = reader.GetInt32("CusID");
-            return order;
-        }
         public bool UpdateStatusOrder(int? orderId)
         {
 
@@ -208,6 +194,18 @@ namespace DAL
         {
             Orders order = new Orders();
             order.Status = reader.GetString("OrderStatus");
+            return order;
+        }
+        private Orders GetOrder(MySqlDataReader reader)
+        {
+            // Customer customer = new Customer();
+            Orders order = new Orders();
+            order.OrderID = reader.GetInt32("OrderID");
+            order.OrderDate = reader.GetDateTime("OrderDate");
+            order.Note = reader.GetString("Note");
+            order.Status = reader.GetString("OrderStatus");
+            order.Customer = new Customer();
+            order.Customer.CusID = reader.GetInt32("CusID");
             return order;
         }
     }

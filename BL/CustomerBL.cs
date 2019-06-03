@@ -9,7 +9,7 @@ namespace BL
         private CustomerDAL cusDAL = new CustomerDAL();
         public Customer GetCustomerByUsernameAndPassword(string userName, string password)
         {
-            Console.WriteLine("ABC");
+            // Console.WriteLine("ABC");
             return cusDAL.GetCustomerByUsernameAndPassword(userName, password);
         }
 
