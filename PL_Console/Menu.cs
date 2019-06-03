@@ -237,7 +237,7 @@ namespace PL_Console
                     }
                     if (choice == "3")
                     {
-                        break;
+                        MenuAfterLogin();
                     }
 
                 }
@@ -339,7 +339,8 @@ namespace PL_Console
                     Console.ReadKey();
                     break;
                 }
-                if (orders == null)
+               
+                if (orders.Count == 0)
                 {
                     Console.WriteLine("List empty, press anykey to continue !\n");
                     Console.ReadKey();
@@ -671,10 +672,10 @@ namespace PL_Console
                 {
                     customer = cuBL.GetCustomerByUsernameAndPassword(userName, password);
                 }
-                catch (System.Exception ex)
+                catch (System.Exception)
                 {
                     // throw;
-                    Console.WriteLine(ex.Message);
+                    Console.WriteLine("Disconnect from database");
                     Console.ReadKey();
                     LoginMenu();
                 }

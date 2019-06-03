@@ -27,7 +27,7 @@ create table if not exists Orders(
 
 OrderID int auto_increment primary key ,
 OrderDate datetime not null,
-Note nvarchar(255) not null,
+Note nvarchar(255) ,
 OrderStatus nvarchar(20) not null,
 CusID int,
 constraint fk_Customers_Orders foreign key(CusID) references Customers(CusID)
@@ -62,7 +62,7 @@ constraint pk_OrderDetail primary key(OrderID,ItemID),
 constraint fk_OrderDetail_Orders foreign key(OrderID) references Orders(OrderID),
 constraint fk_OrderDetail_Items foreign key(ItemID) references Items(ItemID)
 );
-
+select * from orders;
 select * from OrderDetail;
 
 create table if not exists OrderDetail(
