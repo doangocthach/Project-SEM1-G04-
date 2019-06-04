@@ -59,7 +59,7 @@ namespace DAL
                 foreach (var item in order.Items)
                 {
                     command.Parameters.Clear();
-                    command.CommandText = @"insert into OrderDetail(OrderID,ItemID) values(" + order.OrderID + ", " + item.ItemID + ");";
+                    command.CommandText = @"insert into OrderDetail(OrderID,ItemID,ItemCount) values(" + order.OrderID + ", " + item.ItemID + "," + item.ItemCount + ");";
                     command.ExecuteNonQuery();
                 }
                 transactions.Commit();
@@ -190,6 +190,9 @@ namespace DAL
             DBHelper.CloseConnection();
             return result;
         }
+
+
+
         private Orders GetStatus(MySqlDataReader reader)
         {
             Orders order = new Orders();
@@ -199,7 +202,13 @@ namespace DAL
         private Orders GetOrder(MySqlDataReader reader)
         {
             // Customer customer = new Customer();
+            Items item = new Items();
             Orders order = new Orders();
+            order.Items = new List<Items>();
+            order.Item = new Items();
+            // item.ItemCount = reader.GetInt32("ItemID");
+            // order.Item.ItemName = reader.GetString("ItemName");
+            // order.Item.ItemPrice = reader.GetDecimal("ItemPrice");
             order.OrderID = reader.GetInt32("OrderID");
             order.OrderDate = reader.GetDateTime("OrderDate");
             order.Note = reader.GetString("Note");

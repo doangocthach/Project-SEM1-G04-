@@ -11,7 +11,7 @@ namespace Persistence.Model
 
         }
 
-        public Orders(int? orderID, int itemID, DateTime orderDate, string note, string status, Customer customer, decimal amount, List<Items> items, int itemCount)
+        public Orders(int? orderID, int itemID, DateTime orderDate, string note, string status, Customer customer, decimal amount, List<Items> items, Items item)
         {
             OrderID = orderID;
             ItemID = itemID;
@@ -21,9 +21,9 @@ namespace Persistence.Model
             Customer = customer;
             Amount = amount;
             Items = items;
-            ItemCount = itemCount;
+            Item = item;
         }
-    
+
         public int? OrderID { get; set; }
         public int ItemID { get; set; }
         public DateTime OrderDate { get; set; }
@@ -36,7 +36,9 @@ namespace Persistence.Model
 
         public decimal Amount { get; set; }
         public List<Items> Items { get; set; }
-        public int ItemCount { get; set; }
+
+        public Items Item {get;set;}
+        
 
         public override bool Equals(object obj)
         {

@@ -102,6 +102,7 @@ namespace DAL
             customer.CusID = reader.GetInt32("CusID");
             customer.PhoneNumber = reader.GetString("PhoneNumber");
             customer.CusName = reader.GetString("CusName");
+               customer.Money = reader.GetDecimal("Money");
             return customer;
         }
 

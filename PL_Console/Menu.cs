@@ -69,11 +69,11 @@ namespace PL_Console
             }
             return choice;
         }
-        public void Pay(Orders or )
+        public void Pay(Orders or)
         {
             CustomerBL cuBL = new CustomerBL();
             OrderBL ordersbl = new OrderBL();
-         //   Orders or = new Orders();
+            //   Orders or = new Orders();
             or.Customer = new Customer();
 
             while (true)
@@ -191,8 +191,10 @@ namespace PL_Console
                     catch (System.Exception ex)
                     {
                         Console.WriteLine(ex.Message);
+                        Console.ReadKey();
                         break;
                     }
+                    items = itemsa;
                     var table = new ConsoleTable("ID", "ITEM NAME", "QUANTITY");
                     foreach (Items itema in itemsa)
                     {
@@ -231,13 +233,13 @@ namespace PL_Console
                             }
 
                             break;
+                        case "3":
+                            MenuAfterLogin();
+                            break;
+
                         default:
                             Console.WriteLine("Please enter in options !");
                             continue;
-                    }
-                    if (choice == "3")
-                    {
-                        MenuAfterLogin();
                     }
 
                 }
@@ -255,7 +257,10 @@ namespace PL_Console
             while (true)
             {
 
-
+                // foreach (var item in itemsa)
+                // {
+                //     Console.WriteLine(item.ItemCount);
+                // }
                 OrderBL ordersbl = new OrderBL();
                 Console.Write("Enter your note: ");
                 string note = Console.ReadLine();
@@ -263,57 +268,53 @@ namespace PL_Console
                 DateTime date = DateTime.Now;
                 or.OrderDate = date;
                 or.Status = "Not yet";
-                
                 or.Customer = customer;
                 ItemBL itBl = new ItemBL();
-                  
-                foreach (Items item in itemsa)
-                {
-                    or.Items = new List<Items>();
-                    or.Items.Add(itBl.GetItemByID(item.ItemID));
-                }
-               
-                bool a = true;
+                // foreach (Items item in itemsa)
+                // {
+                or.Items = new List<Items>();
+                or.Items = itemsa;
+                // or.Items.Add(itBl.GetItemByID(item.ItemID));
+                // }
 
+
+                bool a = true;
+                bool b;
                 a = ordersbl.CreateOrder(or);
-                
+
                 if (a == true)
                 {
                     string choice = null;
                     Console.WriteLine("\nCreate order success ! \n");
-                                                            
+
                     Console.WriteLine("\n1. Pay now");
                     Console.WriteLine("2. Cancel order");
-                    Console.Write("Enter your select : ");
-                 
-                    choice = Console.ReadLine();
-                    switch (choice)
+                    while (true)
                     {
-                        case "1":
-                            Pay(or);
-                            break;
-                        case "2":
-                            a = ordersbl.DeleteOrder(or.OrderID);
-                            Console.WriteLine("Order has been canceled, Press anykey to continue !");
-                            break;
-                        default:
-                            Console.WriteLine("input invalid !");
-                            break;
-                    }
-                    if (choice == "2")
-                    {
-                        break;
+
+
+                        Console.Write("Enter your select : ");
+
+                        choice = Console.ReadLine();
+                        switch (choice)
+                        {
+                            case "1":
+                                Pay(or);
+                                break;
+                            case "2":
+                                b = ordersbl.DeleteOrder(or.OrderID);
+                                Console.WriteLine("Order has been canceled, Press anykey to continue !");
+                                Console.ReadKey();
+                                MenuAfterLogin();
+                                break;
+                            default:
+                                Console.WriteLine("input invalid !");
+                                break;
+                        }
                     }
 
-                   
                 }
-        
-                if (a == false )
-                {
-                    Console.WriteLine("\n ☹  Create order faild , press anykey to continue !\n");
-                    Console.ReadKey();
-                    break;
-                }
+
 
 
             }
@@ -337,12 +338,12 @@ namespace PL_Console
                 {
                     Console.WriteLine(ex.Message);
                     Console.ReadKey();
-                    break;
+                    throw;
                 }
-               
+
                 if (orders.Count == 0)
                 {
-                    Console.WriteLine("List empty, press anykey to continue !\n");
+                    Console.WriteLine("List orders empty, press anykey to continue !\n");
                     Console.ReadKey();
                     break;
                 }
@@ -383,8 +384,10 @@ namespace PL_Console
             showItemDetail();
         }
 
+
         public void showItemDetail()
         {
+
             while (true)
             {
 
@@ -458,9 +461,6 @@ namespace PL_Console
                 {
                     it = itBL.GetItemByID(itID);
 
-
-                    // Console.WriteLine(amount);
-
                 }
                 catch (System.Exception ex)
                 {
@@ -498,6 +498,55 @@ namespace PL_Console
                     case "1":
                         while (true)
                         {
+                            string selection;
+                            int temp = 0;
+                            int index = 0;
+                            int i = 0;
+                            foreach (var item in items)
+                            {
+                                i++;
+                                if (it.ItemID == items[i].ItemID)
+                                {
+                                    temp += 1;
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+
+                            if (temp == 1)
+                            {
+                                Console.Write("This item already exists in the shopping cart, do you want increase  quantity ?(Y/N):");
+                                selection = Console.ReadLine().ToUpper();
+                                int add;
+                                switch (selection)
+                                {
+                                    case "Y":
+                                        while (true)
+                                        {
+                                            try
+                                            {
+                                                Console.Write("Enter the quantity you want to add: ");
+                                                add = int.Parse(Console.ReadLine());
+                                                li[index].ItemCount += add;
+                                                break;
+                                            }
+                                            catch (System.Exception)
+                                            {
+                                                Console.WriteLine("Item id must be integer and greater 0 !");
+                                                continue;
+                                            }
+                                        }
+                                        break;
+                                    case "N":
+                                        MenuAfterLogin();
+                                        break;
+                                    default:
+                                        Console.WriteLine("");
+                                        break;
+                                }
+                            }
                             Console.Write("Enter quantity of item:");
                             try
                             {
@@ -507,7 +556,7 @@ namespace PL_Console
                             }
                             catch (System.Exception)
                             {
-                                Console.WriteLine("\nYou must enter integer !\n");
+                                Console.WriteLine("\nYou must enter integer and greater 0 !\n");
                                 continue;
                             }
                             if (it.ItemCount > 0)
@@ -516,7 +565,7 @@ namespace PL_Console
                             }
                             else
                             {
-                                Console.WriteLine("\nYou must enter integer !\n");
+                                Console.WriteLine("\nYou must enter integer and greater 0 !\n");
                                 continue;
                             }
                         }
@@ -524,25 +573,28 @@ namespace PL_Console
                         AddToCart(it);
                         break;
                     case "2":
+                        MenuAfterLogin();
                         break;
                     default:
                         Console.WriteLine("You are only entered in the number existing !");
                         continue;
                 }
-                if (select == "2")
-                {
-                    break;
-                }
+
                 string conti;
                 Console.Write("Do you continue ? (Y/N): ");
                 conti = checkYN().ToUpper();
                 if (conti == "Y")
                 {
+                    itBL = new ItemBL();
+                    it = new Items();
+                    li = null;
+                    custom = new Customer();
+                    cutomBL = new CustomerBL();
                     showItems();
                 }
                 else if (conti == "N")
                 {
-                    break;
+                    MenuAfterLogin();
                 }
 
 
@@ -605,6 +657,7 @@ namespace PL_Console
         {
             while (true)
             {
+                Console.Clear();
 
                 Console.WriteLine(row);
                 Console.WriteLine("CUSTOMER INFOMATION");
@@ -614,6 +667,7 @@ namespace PL_Console
                 Console.WriteLine("Customer Name : {0}", customer.CusName);
                 Console.WriteLine("Customer Address : {0}", customer.Address);
                 Console.WriteLine("Customer Phone Number: {0}", customer.PhoneNumber);
+                Console.WriteLine("Money : {0}", customer.Money);
                 string choice = null;
                 Console.WriteLine("\n" + row + "\n");
                 Console.WriteLine("1. Go to menu");
