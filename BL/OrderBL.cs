@@ -26,6 +26,10 @@ namespace BL
             OrderDAL orderDAL = new OrderDAL();
             return orderDAL.DeleteOrder(orderId);
         }
+        public Orders GetOrderDetailByOrderID(int? orderID)
+        {  OrderDAL orderDAL = new OrderDAL();
+            return orderDAL.GetOrderDetailByOrderID(orderID);
+        }
         public bool UpdateStatus(int? orderId)
         {
             OrderDAL orderDAL = new OrderDAL();

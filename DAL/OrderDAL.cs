@@ -40,24 +40,24 @@ namespace DAL
                 // int customId = order.Customer.CusID;
                 int? orderId = 0;
 
-                    command.CommandText = @"insert into Orders(OrderDate,Note,OrderStatus,CusID) values (@OrderDate,@Note,@OrderStatus,@CusID);";
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@CusID", order.Customer.CusID);
-                    command.Parameters.AddWithValue("@OrderStatus", order.Status);
-                    command.Parameters.AddWithValue("@Note", order.Note);
-                    command.Parameters.AddWithValue("@OrderDate", order.OrderDate);
-                    command.ExecuteNonQuery();
-                    command.CommandText = "select LAST_INSERT_ID() as OrderID";
-                    using (reader = command.ExecuteReader())
+                command.CommandText = @"insert into Orders(OrderDate,Note,OrderStatus,CusID) values (@OrderDate,@Note,@OrderStatus,@CusID);";
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@CusID", order.Customer.CusID);
+                command.Parameters.AddWithValue("@OrderStatus", order.Status);
+                command.Parameters.AddWithValue("@Note", order.Note);
+                command.Parameters.AddWithValue("@OrderDate", order.OrderDate);
+                command.ExecuteNonQuery();
+                command.CommandText = "select LAST_INSERT_ID() as OrderID";
+                using (reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
                     {
-                        if (reader.Read())
-                        {
-                            orderId = reader.GetInt32("OrderID");
-                        }
+                        orderId = reader.GetInt32("OrderID");
                     }
-     
-                    order.OrderID = orderId;
-     
+                }
+
+                order.OrderID = orderId;
+
 
 
                 foreach (var item in order.Items)
@@ -147,12 +147,42 @@ namespace DAL
             List<Orders> listOrders = new List<Orders>();
             while (reader.Read())
             {
-
-                Orders od = GetOrder(reader);
+                Orders od = new Orders();
+                od = GetOrder(reader);
                 listOrders.Add(od);
 
             }
             return listOrders;
+        }
+        public Orders GetOrderDetailByOrderID(int? orderId)
+        {
+
+            query = @"Select Orders.OrderID ,Customers.CusID,Customers.CusName,Customers.Address,Orders.OrderDate,Items.ItemID,Items.ItemName,Items.ItemPrice,OrderDetail.ItemCount,Orders.OrderStatus 
+            from Orders inner join Customers on Orders.CusID = Customers.CusID inner join OrderDetail on Orders.OrderID = OrderDetail.OrderID inner join Items on Orderdetail.ItemID = Items.ItemID where Orders.OrderId = " + orderId + ";";
+            reader = DBHelper.ExecQuery(query, DBHelper.OpenConnection());
+            Orders or = new Orders();
+            or.Items = new List<Items>();
+            while (reader.Read())
+            {
+                or.OrderID = reader.GetInt32("OrderID");
+                or.Customer = new Customer();
+                or.Customer.CusID = reader.GetInt32("CusID");
+                or.Customer.CusName = reader.GetString("CusName");
+      
+                or.Customer.Address = reader.GetString("Address");
+
+                or.OrderDate = reader.GetDateTime("OrderDate");
+                or.Status = reader.GetString("OrderStatus");
+                Items item = new Items();
+                item.ItemID = reader.GetInt32("ItemID");
+                item.ItemName = reader.GetString("ItemName");
+                item.ItemCount = reader.GetInt32("ItemCount");
+                item.ItemPrice = reader.GetDecimal("ItemPrice");
+
+                or.Items.Add(item);
+            }
+            DBHelper.CloseConnection();
+            return or;
         }
         public bool UpdateStatusOrder(int? orderId)
         {
@@ -209,9 +239,7 @@ namespace DAL
             Orders order = new Orders();
             order.Items = new List<Items>();
             order.Item = new Items();
-            // item.ItemCount = reader.GetInt32("ItemID");
-            // order.Item.ItemName = reader.GetString("ItemName");
-            // order.Item.ItemPrice = reader.GetDecimal("ItemPrice");
+
             order.OrderID = reader.GetInt32("OrderID");
             order.OrderDate = reader.GetDateTime("OrderDate");
             order.Note = reader.GetString("Note");

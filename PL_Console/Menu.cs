@@ -78,7 +78,7 @@ namespace PL_Console
                 Console.WriteLine("PAY");
                 Console.WriteLine(row);
                 Console.WriteLine("The money you must pay : " + amount);
-               
+
                 Console.WriteLine("Amount you have: " + customer.Money);
                 Console.WriteLine("Press anykey to pay !");
                 Console.ReadKey();
@@ -124,9 +124,10 @@ namespace PL_Console
                     }
 
 
-                    Console.WriteLine("\n  Pay success ! press anykey to continue !\n");
+                    Console.WriteLine("\n  Pay success ! \n");
+                    ShowBill(or.OrderID);
                     amount = 0;
-                    Console.ReadKey();
+                   
                     MenuAfterLogin();
                     break;
                 }
@@ -205,7 +206,9 @@ namespace PL_Console
                         amount += itema.ItemPrice * itema.ItemCount;
 
                     }
+
                     table.Write();
+                    Console.WriteLine("\nAmount : {0}\n", amount);
                     Console.WriteLine("1. Create order");
                     Console.WriteLine("2. Delete shopping cart");
                     Console.WriteLine("3. Back");
@@ -780,7 +783,48 @@ namespace PL_Console
                 }
             }
         }
+        public void ShowBill(int? orderId)
+        {
+            while (true)
+            {
 
+
+                OrderBL oBL = new OrderBL();
+                Orders order = new Orders();
+                try
+                {
+                    order = oBL.GetOrderDetailByOrderID(orderId);
+                }
+                catch (System.Exception ex)
+                {
+
+                    Console.WriteLine(ex);
+                    Console.ReadKey();
+                    break;
+                }
+
+                Console.Clear();
+                Console.WriteLine(row);
+                Console.WriteLine(" VTCA CAFFE");
+                Console.WriteLine(row);
+                Console.WriteLine("\n                           BILL                       \n");
+                Console.WriteLine(" Order date        : {0}", order.OrderDate);
+                Console.WriteLine(" Order ID          : {0}", order.OrderID);
+
+                var table = new ConsoleTable("ITEM NAME         ", "PRICE            ", "QUANTITY", "TOTAL             ");
+                foreach (var item in order.Items)
+                {
+                    Decimal TOTAL = item.ItemPrice * item.ItemCount;
+                    table.AddRow(item.ItemName, item.ItemPrice, item.ItemCount, TOTAL);
+                }
+                table.Write();
+
+                Console.WriteLine("\n Amount : {0}\n", amount);
+                Console.WriteLine("Press anykey to back");
+                Console.ReadKey();
+                break;
+            }
+        }
         public void MenuAfterLogin()
         {
             while (true)
