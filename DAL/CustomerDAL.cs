@@ -32,25 +32,7 @@ namespace DAL
             DBHelper.CloseConnection();
             return customer;
         }
-        public decimal GetMoneyByCustomerId(int? customerId)
-        {
-            // if (connection.State == System.Data.ConnectionState.Closed)
-            // {
-            //     connection.Open();
-            // }
-            
-            query = @"select Money from Customers where CusID = " + customerId + ";";
-            reader = DBHelper.ExecQuery(query,DBHelper.OpenConnection());
-            Customer customer = null;
-            if (reader.Read())
-            {
-                customer = GetMoney(reader);
-            }
-            DBHelper.CloseConnection();
-            
-            return customer.Money;
-        }
-
+      
         public bool UpdateMoneyCustomer(int customerId, decimal Amount)
         {
             if (connection.State == System.Data.ConnectionState.Closed)

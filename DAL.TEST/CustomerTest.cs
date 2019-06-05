@@ -29,13 +29,6 @@ namespace DAL.TEST
             Customer cs = customerDAL.GetCustomerByUsernameAndPassword(username, password);
             Assert.Null(cs);
         }
-        [Theory]
-        [InlineData(1)]
-        [InlineData(2)]
-        public void GetMoneyByCustomerIdTest(int customerId)
-        {
-            Assert.NotNull(customerDAL.GetMoneyByCustomerId(customerId));
-        }
 
         [Theory]
         [InlineData(1, 1)]

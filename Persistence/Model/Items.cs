@@ -10,13 +10,13 @@ namespace Persistence.Model
             
         }
 
-        public Items(int itemCount, decimal itemPrice, int itemID, string itemName, int count, string itemDescription, string size)
+        public Items(int itemCount, decimal itemPrice, int itemID, string itemName,  string itemDescription, string size)
         {
             ItemCount = itemCount;
             ItemPrice = itemPrice;
             ItemID = itemID;
             ItemName = itemName;
-            Count = count;
+           
             ItemDescription = itemDescription;
             Size = size;
         }
@@ -28,7 +28,7 @@ namespace Persistence.Model
 
         public string ItemName{get;set;}
 
-        public int Count;
+      
 
         public string ItemDescription{get;set;}
 

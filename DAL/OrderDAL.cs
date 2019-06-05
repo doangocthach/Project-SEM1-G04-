@@ -40,22 +40,26 @@ namespace DAL
                 // int customId = order.Customer.CusID;
                 int? orderId = 0;
 
-                command.CommandText = @"insert into Orders(OrderDate,Note,OrderStatus,CusID) values (@OrderDate,@Note,@OrderStatus,@CusID);";
-                command.Parameters.Clear();
-                command.Parameters.AddWithValue("@CusID", order.Customer.CusID);
-                command.Parameters.AddWithValue("@OrderStatus", order.Status);
-                command.Parameters.AddWithValue("@Note", order.Note);
-                command.Parameters.AddWithValue("@OrderDate", order.OrderDate);
-                command.ExecuteNonQuery();
-                command.CommandText = "select LAST_INSERT_ID() as OrderID";
-                using (reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
+                    command.CommandText = @"insert into Orders(OrderDate,Note,OrderStatus,CusID) values (@OrderDate,@Note,@OrderStatus,@CusID);";
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@CusID", order.Customer.CusID);
+                    command.Parameters.AddWithValue("@OrderStatus", order.Status);
+                    command.Parameters.AddWithValue("@Note", order.Note);
+                    command.Parameters.AddWithValue("@OrderDate", order.OrderDate);
+                    command.ExecuteNonQuery();
+                    command.CommandText = "select LAST_INSERT_ID() as OrderID";
+                    using (reader = command.ExecuteReader())
                     {
-                        orderId = reader.GetInt32("OrderID");
+                        if (reader.Read())
+                        {
+                            orderId = reader.GetInt32("OrderID");
+                        }
                     }
-                }
-                order.OrderID = orderId;
+     
+                    order.OrderID = orderId;
+     
+
+
                 foreach (var item in order.Items)
                 {
                     command.Parameters.Clear();
@@ -190,7 +194,6 @@ namespace DAL
             DBHelper.CloseConnection();
             return result;
         }
-
 
 
         private Orders GetStatus(MySqlDataReader reader)

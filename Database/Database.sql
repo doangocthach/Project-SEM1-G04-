@@ -73,3 +73,4 @@ constraint pk_OrderDetail primary key(OrderID,ItemID),
 constraint fk_OrderDetail_Orders foreign key(OrderID) references Orders(OrderID),
 constraint fk_OrderDetail_Items foreign key(ItemID) references Items(ItemID)
 );
+select * from customers;

@@ -17,11 +17,7 @@ namespace PL_Console
         decimal amount = 0;
 
         private Customer customer = new Customer();
-        private List<Items> items = new List<Items>();
-
-
-
-
+        List<Items> items = new List<Items>();
         public void MainMenu()
         {
             while (true)
@@ -73,37 +69,26 @@ namespace PL_Console
         {
             CustomerBL cuBL = new CustomerBL();
             OrderBL ordersbl = new OrderBL();
-            //   Orders or = new Orders();
             or.Customer = new Customer();
 
             while (true)
             {
-
-                decimal? Totle;
+                Console.Clear();
                 Console.WriteLine(row);
                 Console.WriteLine("PAY");
                 Console.WriteLine(row);
                 Console.WriteLine("The money you must pay : " + amount);
-                try
-                {
-                    Totle = cuBL.GetMoneybyCustomerId(customer.CusID);
-                }
-                catch (System.Exception ex)
-                {
-
-                    Console.WriteLine(ex.Message);
-                    Console.ReadKey();
-                    continue;
-                }
-                Console.WriteLine("Amount you have: " + Totle);
+               
+                Console.WriteLine("Amount you have: " + customer.Money);
                 Console.WriteLine("Press anykey to pay !");
                 Console.ReadKey();
 
 
-                if (Totle < amount)
+                if (customer.Money < amount)
                 {
-                    Console.WriteLine("The amount you must pay is greater than the amount you have !");
-                    break;
+                    Console.WriteLine("The amount you must pay is greater than the amount you have, press anykey to back !");
+                    Console.ReadKey();
+                    MenuAfterLogin();
                 }
                 else
                 {
@@ -112,6 +97,7 @@ namespace PL_Console
                         bool UpdateMoney = cuBL.UpdateMoneyCustomer(customer.CusID, amount);
 
                         bool UpdateStatus = ordersbl.UpdateStatus(or.OrderID);
+                        customer.Money = customer.Money - amount;
                     }
                     catch (System.Exception ex)
                     {
@@ -137,6 +123,7 @@ namespace PL_Console
                         Console.WriteLine(ioExp.Message);
                     }
 
+
                     Console.WriteLine("\n  Pay success ! press anykey to continue !\n");
                     amount = 0;
                     Console.ReadKey();
@@ -149,8 +136,22 @@ namespace PL_Console
         }
         public void AddToCart(Items item)
         {
+            if (File.Exists("shoppingcart" + customer.UserName + ".dat"))
+            {
+                FileStream fs = new FileStream("shoppingcart" + customer.UserName + ".dat", FileMode.Open, FileAccess.ReadWrite);
+                BinaryReader br = new BinaryReader(fs);
+                string str = br.ReadString();
+                items = JsonConvert.DeserializeObject<List<Items>>(str);
+                fs.Close();
+                br.Close();
+                items.Add(item);
+            }
+            else
+            {
+                items.Add(item);
+            }
+
             Customer cust = new Customer();
-            items.Add(item);
             string sJSONResponse = JsonConvert.SerializeObject(items);
             BinaryWriter bw;
             string fileName = "shoppingcart" + customer.UserName + ".dat";
@@ -163,10 +164,10 @@ namespace PL_Console
                 fs.Close();
 
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
 
-                Console.WriteLine("Disconnect from database !");
+                Console.WriteLine(ex);
             }
             Console.WriteLine("\nAdd to cart success !\n");
         }
@@ -175,6 +176,7 @@ namespace PL_Console
 
             while (true)
             {
+                Console.Clear();
                 Orders or = new Orders();
                 if (File.Exists("shoppingcart" + customer.UserName + ".dat"))
                 {
@@ -194,7 +196,7 @@ namespace PL_Console
                         Console.ReadKey();
                         break;
                     }
-                    items = itemsa;
+                    // items = itemsa;
                     var table = new ConsoleTable("ID", "ITEM NAME", "QUANTITY");
                     foreach (Items itema in itemsa)
                     {
@@ -203,7 +205,6 @@ namespace PL_Console
                         amount += itema.ItemPrice * itema.ItemCount;
 
                     }
-                    // Console.WriteLine(amount);
                     table.Write();
                     Console.WriteLine("1. Create order");
                     Console.WriteLine("2. Delete shopping cart");
@@ -220,17 +221,23 @@ namespace PL_Console
                             try
                             {
                                 // Check if file exists with its full path    
-                                if (File.Exists(Path.Combine("shoppingcart" + customer.UserName + ".dat")))
+                                if (File.Exists(("shoppingcart" + customer.UserName + ".dat")))
                                 {
                                     // If file found, delete it    
-                                    File.Delete(Path.Combine("shoppingcart" + customer.UserName + ".dat"));
+                                    File.Delete(("shoppingcart" + customer.UserName + ".dat"));
+                                    items.Clear();
+
                                 }
-                                else Console.WriteLine("Cart not found");
+                                else
+                                {
+                                    Console.WriteLine("Cart not found");
+                                }
                             }
                             catch (IOException ioExp)
                             {
                                 Console.WriteLine(ioExp.Message);
                             }
+
 
                             break;
                         case "3":
@@ -325,6 +332,7 @@ namespace PL_Console
 
             while (true)
             {
+                Console.Clear();
                 Console.WriteLine(row);
                 Console.WriteLine("BOUGHT ORDER");
                 Console.WriteLine(row);
@@ -358,76 +366,54 @@ namespace PL_Console
                 break;
             }
         }
-
         public void showItems()
         {
-            Console.WriteLine(row);
-            Console.WriteLine("MENU");
-            Console.WriteLine(row);
-            ItemBL itemBL = new ItemBL();
-            List<Items> li = null;
-            try
-            {
-                li = itemBL.GetItems();
-            }
-            catch (System.Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                Console.ReadKey();
-            }
-            var table = new ConsoleTable("ID", "ITEM NAME");
-            foreach (Items item in li)
-            {
-                table.AddRow(item.ItemID, item.ItemName);
-            }
-            table.Write();
-            showItemDetail();
-        }
-
-
-        public void showItemDetail()
-        {
-
             while (true)
             {
 
-                string row = ("==================================================================");
 
-
-                ItemBL itBL = new ItemBL();
-                Items it = new Items();
+                Console.Clear();
+                Console.WriteLine(row);
+                Console.WriteLine("MENU");
+                Console.WriteLine(row);
+                ItemBL itemBL = new ItemBL();
                 List<Items> li = null;
-                Customer custom = new Customer();
-                CustomerBL cutomBL = new CustomerBL();
-                int itemCount;
-
-                string choice;
+                try
+                {
+                    li = itemBL.GetItems();
+                }
+                catch (System.Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    Console.ReadKey();
+                }
+                var table = new ConsoleTable("ID", "ITEM NAME");
+                foreach (Items item in li)
+                {
+                    table.AddRow(item.ItemID, item.ItemName);
+                }
+                table.Write();
                 int itID;
+                string choice;
                 while (true)
                 {
-
-
                     try
                     {
-                        li = itBL.GetItems();
+                        li = itemBL.GetItems();
                         Console.Write("Enter item id: ");
                         itID = int.Parse(Console.ReadLine());
 
                         break;
-
                     }
                     catch (System.Exception)
                     {
-
                         Console.WriteLine("Item id must be integer and in the options !");
                         continue;
                     }
                 }
-
                 if (itID > li.Count || validateChoice(itID.ToString()) == false)
                 {
                     Console.Write("You are only entered in the number of existing ids !");
-
                     while (true)
                     {
                         Console.Write("Do  you want re-enter ? (Y/N): ");
@@ -439,7 +425,6 @@ namespace PL_Console
                             continue;
                         }
                         break;
-
                     }
 
                     switch (choice)
@@ -455,6 +440,24 @@ namespace PL_Console
                             continue;
                     }
                 }
+                showItemDetail(itID);
+            }
+
+        }
+        public void showItemDetail(int itID)
+        {
+
+            while (true)
+            {
+                Console.Clear();
+                string row = ("==================================================================");
+                ItemBL itBL = new ItemBL();
+                Items it = new Items();
+                // List<Items> li = null;
+                Customer custom = new Customer();
+                CustomerBL cutomBL = new CustomerBL();
+                int itemCount;
+
 
 
                 try
@@ -496,22 +499,37 @@ namespace PL_Console
                 switch (select)
                 {
                     case "1":
+                        List<Items> litems = null;
+                        if (File.Exists(("shoppingcart" + customer.UserName + ".dat")))
+                        {
+                            FileStream f = new FileStream("shoppingcart" + customer.UserName + ".dat", FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                            BinaryReader br = new BinaryReader(f);
+                            string a = br.ReadString();
+                            litems = JsonConvert.DeserializeObject<List<Items>>(a);
+                            br.Close();
+                            f.Close();
+                        }
                         while (true)
                         {
                             string selection;
                             int temp = 0;
                             int index = 0;
-                            int i = 0;
-                            foreach (var item in items)
+
+
+                            if (litems != null)
                             {
-                                i++;
-                                if (it.ItemID == items[i].ItemID)
+                                for (int i = 0; i < litems.Count; i++)
                                 {
-                                    temp += 1;
-                                }
-                                else
-                                {
-                                    break;
+                                    if (it.ItemID == litems[i].ItemID)
+                                    {
+                                        temp += 1;
+                                        index = i;
+                                        break;
+                                    }
+                                    else
+                                    {
+
+                                    }
                                 }
                             }
 
@@ -525,11 +543,29 @@ namespace PL_Console
                                     case "Y":
                                         while (true)
                                         {
+                                            Console.Write("Enter the quantity you want to add: ");
                                             try
                                             {
-                                                Console.Write("Enter the quantity you want to add: ");
                                                 add = int.Parse(Console.ReadLine());
-                                                li[index].ItemCount += add;
+                                                litems[index].ItemCount += add;
+
+                                                string fileName = "shoppingcart" + customer.UserName + ".dat";
+                                                File.Delete(fileName);
+                                                string sJSONResponse = JsonConvert.SerializeObject(litems);
+                                                BinaryWriter bw;
+                                                try
+                                                {
+                                                    FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                                                    bw = new BinaryWriter(fs);
+                                                    bw.Write((string)(object)sJSONResponse);
+                                                    fs.Close();
+                                                }
+                                                catch (System.Exception)
+                                                {
+                                                    Console.WriteLine("Disconnect from database !");
+                                                }
+                                                Console.WriteLine("\nAdd quantity success !\n");
+
                                                 break;
                                             }
                                             catch (System.Exception)
@@ -538,13 +574,15 @@ namespace PL_Console
                                                 continue;
                                             }
                                         }
+
+                                        MenuAfterLogin();
                                         break;
                                     case "N":
                                         MenuAfterLogin();
                                         break;
                                     default:
-                                        Console.WriteLine("");
-                                        break;
+                                        Console.Write("You must enter Y/N \n");
+                                        continue;
                                 }
                             }
                             Console.Write("Enter quantity of item:");
@@ -569,7 +607,7 @@ namespace PL_Console
                                 continue;
                             }
                         }
-
+                        // li.Add(it);
                         AddToCart(it);
                         break;
                     case "2":
@@ -587,7 +625,7 @@ namespace PL_Console
                 {
                     itBL = new ItemBL();
                     it = new Items();
-                    li = null;
+                    // li = null;
                     custom = new Customer();
                     cutomBL = new CustomerBL();
                     showItems();
@@ -628,8 +666,6 @@ namespace PL_Console
             }
             return sb.ToString();
         }
-
-
         public bool validate(string str)
         {
             Regex regex = new Regex("[a-zA-Z0-9_]");
@@ -750,6 +786,7 @@ namespace PL_Console
             while (true)
             {
                 Console.Clear();
+
                 Console.WriteLine(row);
                 Console.WriteLine("WELCOME BACK ! {0}", customer.CusName.ToUpper());
                 string chose;
@@ -786,6 +823,8 @@ namespace PL_Console
                 }
             }
         }
+
+
     }
 }
 
