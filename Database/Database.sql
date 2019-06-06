@@ -5,8 +5,6 @@ create database if not exists VTCAcaffe;
 
 use VTCAcaffe;
 
--- lock tables Items write, Orders write,OrderDetail write;
--- unlock tables;
 create table if not exists Customers(
 CusID int auto_increment primary key,
 CusName nvarchar(50) not null,
@@ -57,14 +55,14 @@ trải nghiệm khác biệt . ','M,L,XL'),
 create table if not exists OrderDetail(
 OrderID int,
 ItemID int ,
- ItemCount int,
+ItemCount int,
 constraint pk_OrderDetail primary key(OrderID,ItemID),
 constraint fk_OrderDetail_Orders foreign key(OrderID) references Orders(OrderID),
 constraint fk_OrderDetail_Items foreign key(ItemID) references Items(ItemID)
 );
 select * from orders;
 select * from OrderDetail;
-
+Select Orders.OrderID ,Customers.CusID,Customers.CusName,Customers.Address,Orders.OrderDate,Items.ItemID,Items.ItemName,Items.ItemPrice,OrderDetail.ItemCount,Orders.OrderStatus from Orders inner join Customers on Orders.CusID = Customers.CusID inner join OrderDetail on Orders.OrderID = OrderDetail.OrderID inner join Items on Orderdetail.ItemID = Items.ItemID where Orders.OrderId = 2;
 create table if not exists OrderDetail(
 OrderID int,
 ItemID int ,

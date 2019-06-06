@@ -127,7 +127,7 @@ namespace PL_Console
                     Console.WriteLine("\n  Pay success ! \n");
                     ShowBill(or.OrderID);
                     amount = 0;
-                   
+
                     MenuAfterLogin();
                     break;
                 }
@@ -364,9 +364,48 @@ namespace PL_Console
                     table.AddRow(ord.OrderID, ord.OrderDate, ord.Note, ord.Status);
                 }
                 table.Write();
-                Console.WriteLine("\nPress anykey to continue !\n");
-                Console.ReadKey();
-                break;
+
+                string choice;
+                Console.WriteLine("1. View detail of order");
+                Console.WriteLine("2. Back.");
+                Console.Write("Enter your selection: ");
+                choice = Console.ReadLine();
+                switch (choice)
+                {
+                    case "1":
+                        while (true)
+                        {
+                            Console.Write("Enter the order ID you want to see:  ");
+                            try
+                            {
+                                int orderid = int.Parse(Console.ReadLine());
+                                
+                                if (orderid > orders.Count)
+                                {
+                                    Console.WriteLine("You must enter order ID exists !");
+                                    continue;
+                                }
+                                ShowBill(orderid);
+                                break;
+                            }
+                            catch (System.Exception)
+                            {
+
+                                Console.WriteLine("You must enter order ID exists !");
+                                continue;
+                            }
+
+                        }
+
+                        break;
+                     case "2": 
+                      MenuAfterLogin();
+                      break;
+                    default:
+                     Console.WriteLine("You must enter integer and in the option !");
+                     Console.ReadKey();
+                     continue;
+                }
             }
         }
         public void showItems()
@@ -396,54 +435,151 @@ namespace PL_Console
                     table.AddRow(item.ItemID, item.ItemName);
                 }
                 table.Write();
-                int itID;
-                string choice;
-                while (true)
-                {
-                    try
-                    {
-                        li = itemBL.GetItems();
-                        Console.Write("Enter item id: ");
-                        itID = int.Parse(Console.ReadLine());
 
-                        break;
-                    }
-                    catch (System.Exception)
-                    {
-                        Console.WriteLine("Item id must be integer and in the options !");
-                        continue;
-                    }
-                }
-                if (itID > li.Count || validateChoice(itID.ToString()) == false)
+                string selction;
+
+                Console.WriteLine("1. Select item.");
+                Console.WriteLine("2. Search item.");
+                Console.WriteLine("3. Back.");
+                Console.Write("Enter your selection: ");
+
+                selction = Console.ReadLine();
+                switch (selction)
                 {
-                    Console.Write("You are only entered in the number of existing ids !");
-                    while (true)
-                    {
-                        Console.Write("Do  you want re-enter ? (Y/N): ");
-                        choice = Console.ReadLine().ToUpper();
-                        if (choice != "Y" && choice != "N")
+                    case "1":
+                        int itID;
+                        string choice;
+                        while (true)
                         {
-                            Console.Write("You can only enter  (Y/N): ");
-                            choice = Console.ReadLine().ToUpper();
-                            continue;
+                            try
+                            {
+                                li = itemBL.GetItems();
+                                Console.Write("Enter item id: ");
+                                itID = int.Parse(Console.ReadLine());
+
+                                break;
+                            }
+                            catch (System.Exception)
+                            {
+                                Console.WriteLine("Item id must be integer and in the options !");
+                                continue;
+                            }
                         }
+                        if (itID > li.Count || validateChoice(itID.ToString()) == false)
+                        {
+                            Console.Write("You are only entered in the number of existing ids !");
+                            while (true)
+                            {
+                                Console.Write("Do  you want re-enter ? (Y/N): ");
+                                choice = Console.ReadLine().ToUpper();
+                                if (choice != "Y" && choice != "N")
+                                {
+                                    Console.Write("You can only enter  (Y/N): ");
+                                    choice = Console.ReadLine().ToUpper();
+                                    continue;
+                                }
+                                break;
+                            }
+
+                            switch (choice)
+                            {
+                                case "Y":
+                                    continue;
+
+                                case "N":
+                                    showItems();
+                                    break;
+
+                                default:
+                                    continue;
+                            }
+                        }
+                        showItemDetail(itID);
                         break;
-                    }
+                    case "2":
+                        string str;
+                        int temp = 0;
+                        Console.InputEncoding = Encoding.Unicode;
+                        Console.Write("Enter the item to search: ");
+                        str = Console.ReadLine().Trim();
+                        var tables = new ConsoleTable("ID", "ITEM NAME");
+                        foreach (var item in li)
+                        {
+                            if (item.ItemName.ToUpper().Contains(str.ToUpper()))
+                            {
+                                tables.AddRow(item.ItemID, item.ItemName);
+                                // showItemDetail(item.ItemID);
+                                temp = 1;
+                            }
 
-                    switch (choice)
-                    {
-                        case "Y":
-                            continue;
 
-                        case "N":
-                            showItems();
+                        }
+                        if (temp == 0)
+                        {
+                            Console.WriteLine("No items found, press anykey to continue !");
+                            Console.ReadKey();
                             break;
+                        }
+                        tables.Write();
+                        int itemid;
+                        string choicee;
+                        while (true)
+                        {
+                            try
+                            {
+                                li = itemBL.GetItems();
+                                Console.Write("Enter item id: ");
+                                itemid = int.Parse(Console.ReadLine());
 
-                        default:
-                            continue;
-                    }
+                                break;
+                            }
+                            catch (System.Exception)
+                            {
+                                Console.WriteLine("Item id must be integer and in the options !");
+                                continue;
+                            }
+                        }
+                        if (itemid > li.Count || validateChoice(itemid.ToString()) == false)
+                        {
+                            Console.Write("You are only entered in the number of existing ids !");
+                            while (true)
+                            {
+                                Console.Write("Do  you want re-enter ? (Y/N): ");
+                                choicee = Console.ReadLine().ToUpper();
+                                if (choicee != "Y" && choicee != "N")
+                                {
+                                    Console.Write("You can only enter  (Y/N): ");
+                                    choice = Console.ReadLine().ToUpper();
+                                    continue;
+                                }
+                                break;
+                            }
+
+                            switch (choicee)
+                            {
+                                case "Y":
+                                    continue;
+
+                                case "N":
+                                    showItems();
+                                    break;
+
+                                default:
+                                    continue;
+                            }
+                        }
+                        showItemDetail(itemid);
+                        Console.ReadKey();
+                        break;
+                    case "3":
+                        MenuAfterLogin();
+                        break;
+                    default:
+                        Console.WriteLine("You must enter integer and in the option !");
+                        Console.ReadKey();
+                        break;
                 }
-                showItemDetail(itID);
+
             }
 
         }
