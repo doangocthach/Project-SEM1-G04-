@@ -11,7 +11,6 @@ namespace DAL.TEST
 
         OrderDAL oDAl = new OrderDAL();
         [Fact]
-
         public void Create_test()
         {
             Orders or = new Orders();
@@ -25,6 +24,16 @@ namespace DAL.TEST
             items.ItemPrice = 2;
             or.Items.Add(items);
             Assert.True(oDAl.CreateOrder(or));
+        }
+        [Fact]
+        public void DeleteOrder()
+        {
+           Assert.True(oDAl.DeleteOrder(1));
+        }
+        [Fact]
+        public void UpdateStatus()
+        {
+          Assert.True(oDAl.UpdateStatusOrder(1));
         }
         [Theory]
         [InlineData(2)]

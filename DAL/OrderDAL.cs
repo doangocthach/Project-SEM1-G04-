@@ -17,8 +17,6 @@ namespace DAL
         {
             connection = DBHelper.OpenConnection();
         }
-
-
         public bool CreateOrder(Orders order)
         {
             Customer cu = new Customer();
@@ -38,8 +36,7 @@ namespace DAL
             try
             {
                 // int customId = order.Customer.CusID;
-                int? orderId = 0;
-
+                int orderId = 0;
                 command.CommandText = @"insert into Orders(OrderDate,Note,OrderStatus,CusID) values (@OrderDate,@Note,@OrderStatus,@CusID);";
                 command.Parameters.Clear();
                 command.Parameters.AddWithValue("@CusID", order.Customer.CusID);
@@ -57,13 +54,10 @@ namespace DAL
                 }
 
                 order.OrderID = orderId;
-
-
-
                 foreach (var item in order.Items)
                 {
                     command.Parameters.Clear();
-                    command.CommandText = @"insert into OrderDetail(OrderID,ItemID,ItemCount) values(" + order.OrderID + ", " + item.ItemID + "," + item.ItemCount + ");";
+                    command.CommandText = @"insert into OrderDetail(OrderID,ItemID,ItemCount,Size) values (" + order.OrderID + ", " + item.ItemID + "," + item.ItemCount + ",'" + item.Size + "'" + ");";
                     command.ExecuteNonQuery();
                 }
                 transactions.Commit();
@@ -157,7 +151,7 @@ namespace DAL
         public Orders GetOrderDetailByOrderID(int? orderId)
         {
 
-            query = @"Select Orders.OrderID ,Customers.CusID,Customers.CusName,Customers.Address,Orders.OrderDate,Items.ItemID,Items.ItemName,Items.ItemPrice,OrderDetail.ItemCount,Orders.OrderStatus 
+            query = @"Select Orders.OrderID ,Customers.CusID,Customers.CusName,Customers.Address,Orders.OrderDate,Items.ItemID,Items.ItemName,Items.ItemPrice,OrderDetail.Size,OrderDetail.ItemCount,Orders.OrderStatus 
             from Orders inner join Customers on Orders.CusID = Customers.CusID inner join OrderDetail on Orders.OrderID = OrderDetail.OrderID inner join Items on Orderdetail.ItemID = Items.ItemID where Orders.OrderId = " + orderId + ";";
             reader = DBHelper.ExecQuery(query, DBHelper.OpenConnection());
             Orders or = new Orders();
@@ -168,9 +162,7 @@ namespace DAL
                 or.Customer = new Customer();
                 or.Customer.CusID = reader.GetInt32("CusID");
                 or.Customer.CusName = reader.GetString("CusName");
-      
                 or.Customer.Address = reader.GetString("Address");
-
                 or.OrderDate = reader.GetDateTime("OrderDate");
                 or.Status = reader.GetString("OrderStatus");
                 Items item = new Items();
@@ -178,6 +170,7 @@ namespace DAL
                 item.ItemName = reader.GetString("ItemName");
                 item.ItemCount = reader.GetInt32("ItemCount");
                 item.ItemPrice = reader.GetDecimal("ItemPrice");
+                item.Size = reader.GetString("Size");
 
                 or.Items.Add(item);
             }
@@ -224,8 +217,6 @@ namespace DAL
             DBHelper.CloseConnection();
             return result;
         }
-
-
         private Orders GetStatus(MySqlDataReader reader)
         {
             Orders order = new Orders();

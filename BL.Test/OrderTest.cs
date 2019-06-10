@@ -6,7 +6,7 @@ using Persistence.Model;
 
 namespace BL.Test
 {
-   public class OrderTest
+    public class OrderTest
     {
         OrderBL oBL = new OrderBL();
 
@@ -17,9 +17,18 @@ namespace BL.Test
             var orders = oBL.GetOrdersByCustomerId(id);
             Assert.NotNull(orders);
         }
-
-             [Fact]
-
+        [Fact]
+        public void DeleteOrder()
+        {
+            Assert.True(oBL.DeleteOrder(1));
+        }
+        
+        [Fact]
+        public void UpdateStatus()
+        {
+            Assert.True(oBL.UpdateStatus(1));
+        }
+        [Fact]
         public void Create_test()
         {
             Orders or = new Orders();

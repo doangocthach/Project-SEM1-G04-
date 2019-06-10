@@ -11,7 +11,7 @@ namespace Persistence.Model
 
         }
 
-        public Orders(int? orderID, int itemID, DateTime orderDate, string note, string status, Customer customer, decimal amount, List<Items> items, Items item)
+        public Orders(int orderID, int itemID, DateTime orderDate, string note, string status, Customer customer, decimal amount, List<Items> items, Items item)
         {
             OrderID = orderID;
             ItemID = itemID;
@@ -24,7 +24,7 @@ namespace Persistence.Model
             Item = item;
         }
 
-        public int? OrderID { get; set; }
+        public int OrderID { get; set; }
         public int ItemID { get; set; }
         public DateTime OrderDate { get; set; }
 

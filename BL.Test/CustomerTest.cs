@@ -29,6 +29,13 @@ namespace BL.Test
             Assert.NotNull(cu);
         }
         
+        [Theory]
+        [InlineData(1,20)]
+        public void UpdateMoneyTest(int customerId, int amount)
+        {
+            CustomerBL.UpdateMoneyCustomer(customerId,amount);
+        }
+        
 
     }
 }

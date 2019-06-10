@@ -3,12 +3,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using BL;
 using Persistence.Model;
-using System.Security;
+// using System.Security;
 using System.Collections.Generic;
 using ConsoleTables;
 using System.IO;
 using Newtonsoft.Json;
-using System.Threading;
+using System.Globalization;
+
 namespace PL_Console
 {
     public class Menu
@@ -20,8 +21,11 @@ namespace PL_Console
         List<Items> items = new List<Items>();
         public void MainMenu()
         {
+
             while (true)
             {
+                Console.Clear();
+                Console.WriteLine("=================== WELCOME TO VTCA CAFFE !=======================");
                 string choice;
                 Console.WriteLine("1. Login ");
                 Console.WriteLine("2. Exit ");
@@ -77,16 +81,12 @@ namespace PL_Console
                 Console.WriteLine(row);
                 Console.WriteLine("PAY");
                 Console.WriteLine(row);
-                Console.WriteLine("The money you must pay : " + amount);
 
-                Console.WriteLine("Amount you have: " + customer.Money);
-                Console.WriteLine("Press anykey to pay !");
-                Console.ReadKey();
 
 
                 if (customer.Money < amount)
                 {
-                    Console.WriteLine("The amount you must pay is greater than the amount you have, press anykey to back !");
+                    Console.WriteLine("Your card does not have enough money ! ");
                     Console.ReadKey();
                     MenuAfterLogin();
                 }
@@ -124,10 +124,10 @@ namespace PL_Console
                     }
 
 
-                    Console.WriteLine("\n  Pay success ! \n");
+                    Console.WriteLine("\n  Pay success, press anykey to continue !\n");
                     ShowBill(or.OrderID);
                     amount = 0;
-
+                    Console.ReadKey();
                     MenuAfterLogin();
                     break;
                 }
@@ -197,21 +197,23 @@ namespace PL_Console
                         Console.ReadKey();
                         break;
                     }
+                    decimal AmountPay = 0;
                     // items = itemsa;
-                    var table = new ConsoleTable("ID", "ITEM NAME", "QUANTITY");
+                    var table = new ConsoleTable("ID", "ITEM NAME", "QUANTITY", "PRICE", "SIZE", "TOTLE");
                     foreach (Items itema in itemsa)
                     {
-
-                        table.AddRow(itema.ItemID, itema.ItemName, itema.ItemCount);
+                        decimal totle = itema.ItemPrice * itema.ItemCount;
+                        table.AddRow(itema.ItemID, itema.ItemName, itema.ItemCount, itema.ItemPrice, itema.Size, totle);
                         amount += itema.ItemPrice * itema.ItemCount;
-
+                        AmountPay += totle;
                     }
 
                     table.Write();
-                    Console.WriteLine("\nAmount : {0}\n", amount);
-                    Console.WriteLine("1. Create order");
+                    Console.WriteLine("\nAmount : {0}\n", AmountPay);
+                    Console.WriteLine("1. Pay");
                     Console.WriteLine("2. Delete shopping cart");
-                    Console.WriteLine("3. Back");
+                    Console.WriteLine("3. Delete a item");
+                    Console.WriteLine("4. Back");
                     string choice;
                     Console.Write("Enter your selection : ");
                     choice = Console.ReadLine();
@@ -241,9 +243,66 @@ namespace PL_Console
                                 Console.WriteLine(ioExp.Message);
                             }
 
-
                             break;
                         case "3":
+                            int deleteId;
+                            int temp = 1;
+                            // int i = 0;
+                            while (true)
+                            {
+                                Console.Write("Enter the item ID you want to delete or enter 0 to back:");
+                                try
+                                {
+                                    deleteId = int.Parse(Console.ReadLine());
+                                    if (deleteId == 0)
+                                    {
+                                        break;
+                                    }
+
+
+                                    for (int i = 0; i < itemsa.Count; i++)
+                                    {
+                                        if (itemsa[i].ItemID == deleteId)
+                                        {
+                                            temp = 0;
+                                            amount = 0;
+                                            items.Clear();
+                                            itemsa.RemoveAt(i);
+                                            string fileName = "shoppingcart" + customer.UserName + ".dat";
+                                            File.Delete(fileName);
+                                            string sJSONResponse = JsonConvert.SerializeObject(itemsa);
+                                            BinaryWriter bw;
+                                            try
+                                            {
+                                                FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                                                bw = new BinaryWriter(fs);
+                                                bw.Write((string)(object)sJSONResponse);
+                                                fs.Close();
+                                            }
+                                            catch (System.Exception ex)
+                                            {
+                                                Console.WriteLine(ex);
+                                            }
+                                        }
+                                    }
+                                    if (temp == 1)
+                                    {
+                                        Console.WriteLine("No item found , press anykey to back");
+                                        amount = 0;
+                                        Console.ReadKey();
+                                        break;
+                                    }
+                                    break;
+                                }
+                                catch (System.Exception)
+                                {
+                                    Console.WriteLine("You must enter id exists!");
+                                    Console.ReadKey();
+                                    continue;
+                                }
+                            }
+                            continue;
+                        case "4":
                             MenuAfterLogin();
                             break;
 
@@ -264,65 +323,121 @@ namespace PL_Console
         }
         public void CreateOrder(Orders or, List<Items> itemsa)
         {
+
+
+            CultureInfo provider = CultureInfo.InvariantCulture; ;
+            OrderBL ordersbl = new OrderBL();
+            Console.Write("Enter your note: ");
+            string note = Console.ReadLine();
+            or.Note = note;
+            // string date = DateTime.Now.ToString("dddd, dd MMMM yyyy");
+            or.OrderDate = DateTime.Now;
+            or.Status = "Not yet";
+            or.Customer = customer;
+            ItemBL itBl = new ItemBL();
+            or.Items = new List<Items>();
+            or.Items = itemsa;
+            bool a = true;
+            bool b;
+
             while (true)
             {
 
-                // foreach (var item in itemsa)
-                // {
-                //     Console.WriteLine(item.ItemCount);
-                // }
-                OrderBL ordersbl = new OrderBL();
-                Console.Write("Enter your note: ");
-                string note = Console.ReadLine();
-                or.Note = note;
-                DateTime date = DateTime.Now;
-                or.OrderDate = date;
-                or.Status = "Not yet";
-                or.Customer = customer;
-                ItemBL itBl = new ItemBL();
-                // foreach (Items item in itemsa)
-                // {
-                or.Items = new List<Items>();
-                or.Items = itemsa;
-                // or.Items.Add(itBl.GetItemByID(item.ItemID));
-                // }
+                Console.Clear();
+                string check;
+                string choice = null;
+                Console.WriteLine(row);
+                Console.WriteLine("PAY");
+                Console.WriteLine(row);
+                Console.WriteLine("\n1. Pay by ATM card ");
+                Console.WriteLine("2. Pay down ");
+                Console.WriteLine("3. Cancel order");
 
+                Console.Write("Enter your select : ");
 
-                bool a = true;
-                bool b;
-                a = ordersbl.CreateOrder(or);
-
-                if (a == true)
+                choice = Console.ReadLine();
+                switch (choice)
                 {
-                    string choice = null;
-                    Console.WriteLine("\nCreate order success ! \n");
-
-                    Console.WriteLine("\n1. Pay now");
-                    Console.WriteLine("2. Cancel order");
-                    while (true)
-                    {
-
-
-                        Console.Write("Enter your select : ");
-
-                        choice = Console.ReadLine();
-                        switch (choice)
+                    case "1":
+                        while (true)
                         {
-                            case "1":
-                                Pay(or);
-                                break;
-                            case "2":
-                                b = ordersbl.DeleteOrder(or.OrderID);
-                                Console.WriteLine("Order has been canceled, Press anykey to continue !");
-                                Console.ReadKey();
-                                MenuAfterLogin();
-                                break;
-                            default:
-                                Console.WriteLine("input invalid !");
-                                break;
-                        }
-                    }
 
+                            Console.WriteLine("The money you must pay : " + amount);
+                            Console.WriteLine("your card have: " + customer.Money);
+                            Console.WriteLine("1. Confirm ");
+                            Console.WriteLine("2. Back");
+                            Console.Write("Enter your selection :");
+                            string select = Console.ReadLine();
+                            switch (select)
+                            {
+                                case "1":
+                                    Console.WriteLine("Press anykey to pay !");
+                                    Console.ReadKey();
+                                    if (customer.Money < amount)
+                                    {
+                                        Console.WriteLine("Your card does not have enough money ! ");
+                                        Console.ReadKey();
+                                        break;
+                                    }
+                                    a = ordersbl.CreateOrder(or);
+                                    items.Clear();
+                                    Pay(or);
+                                    break;
+                                case "2":
+
+                                    break;
+
+                                default:
+                                    Console.WriteLine("You must enter integer and in the option !");
+                                    Console.ReadKey();
+                                    continue;
+                            }
+                            break;
+                        }
+
+                        break;
+
+                    case "2":
+                        decimal cash;
+                        while (true)
+                        {
+                            Console.WriteLine("The money you must pay : " + amount);
+                            Console.Write("Enter amount must pay:");
+                            bool c = Decimal.TryParse(Console.ReadLine(), out cash);
+                            if (cash < amount)
+                            {
+                                Console.Write("Amout must greater than totle price, do you continue (Y/N)");
+                                check = checkYN();
+                                if (check == "N")
+                                {
+                                    break;
+                                }
+                                else
+                                {
+                                    continue;
+                                }
+                            }
+                            if (cash > amount)
+                            {
+                                decimal excessCash = amount - cash;
+                                Console.WriteLine("\npay back the excess {0}, press anykey to continue\n", FomatMoney(excessCash));
+                                Console.ReadKey();
+                                a = ordersbl.CreateOrder(or);
+                                items.Clear();
+                                Pay(or);
+                            }
+                        }
+                        break;
+                    case "3":
+                        b = ordersbl.DeleteOrder(or.OrderID);
+                        Console.WriteLine("Order has been canceled, Press anykey to continue !");
+                        Console.ReadKey();
+                        MenuAfterLogin();
+                        break;
+
+                    default:
+                        Console.WriteLine("input invalid !");
+                        break;
                 }
 
 
@@ -361,7 +476,7 @@ namespace PL_Console
                 var table = new ConsoleTable("ORDER ID", "ORDER DATE", "NOTE", "ORDER STATUS");
                 foreach (Orders ord in orders)
                 {
-                    table.AddRow(ord.OrderID, ord.OrderDate, ord.Note, ord.Status);
+                    table.AddRow(ord.OrderID, ord.OrderDate.ToString("dddd, dd MMMM yyyy"), ord.Note, ord.Status);
                 }
                 table.Write();
 
@@ -379,7 +494,7 @@ namespace PL_Console
                             try
                             {
                                 int orderid = int.Parse(Console.ReadLine());
-                                
+
                                 if (orderid > orders.Count)
                                 {
                                     Console.WriteLine("You must enter order ID exists !");
@@ -394,17 +509,16 @@ namespace PL_Console
                                 Console.WriteLine("You must enter order ID exists !");
                                 continue;
                             }
-
                         }
 
                         break;
-                     case "2": 
-                      MenuAfterLogin();
-                      break;
+                    case "2":
+                        MenuAfterLogin();
+                        break;
                     default:
-                     Console.WriteLine("You must enter integer and in the option !");
-                     Console.ReadKey();
-                     continue;
+                        Console.WriteLine("You must enter integer and in the option !");
+                        Console.ReadKey();
+                        continue;
                 }
             }
         }
@@ -429,10 +543,10 @@ namespace PL_Console
                     Console.WriteLine(ex.Message);
                     Console.ReadKey();
                 }
-                var table = new ConsoleTable("ID", "ITEM NAME");
+                var table = new ConsoleTable("ID", "ITEM'S NAME", "PRICE OF SIZE M", "PRICE OF SIZE X", "PRICE OF SIZE XL");
                 foreach (Items item in li)
                 {
-                    table.AddRow(item.ItemID, item.ItemName);
+                    table.AddRow(item.ItemID, item.ItemName, FomatMoney(item.ItemPrice), FomatMoney(item.ItemPrice + 5), FomatMoney(item.ItemPrice + 10));
                 }
                 table.Write();
 
@@ -500,19 +614,18 @@ namespace PL_Console
                         string str;
                         int temp = 0;
                         Console.InputEncoding = Encoding.Unicode;
+
                         Console.Write("Enter the item to search: ");
                         str = Console.ReadLine().Trim();
-                        var tables = new ConsoleTable("ID", "ITEM NAME");
+
+                        var tables = new ConsoleTable("ID", "ITEM'S NAME", "PRICE OF SIZE M", "PRICE OF SIZE X", "PRICE OF SIZE XL");
                         foreach (var item in li)
                         {
                             if (item.ItemName.ToUpper().Contains(str.ToUpper()))
                             {
-                                tables.AddRow(item.ItemID, item.ItemName);
-                                // showItemDetail(item.ItemID);
+                                tables.AddRow(item.ItemID, item.ItemName, FomatMoney(item.ItemPrice), FomatMoney(item.ItemPrice + 5), FomatMoney(item.ItemPrice + 10));
                                 temp = 1;
                             }
-
-
                         }
                         if (temp == 0)
                         {
@@ -520,6 +633,8 @@ namespace PL_Console
                             Console.ReadKey();
                             break;
                         }
+                        Console.Clear();
+                        Console.WriteLine("RESULT FOR: {0}\n", str);
                         tables.Write();
                         int itemid;
                         string choicee;
@@ -595,9 +710,6 @@ namespace PL_Console
                 // List<Items> li = null;
                 Customer custom = new Customer();
                 CustomerBL cutomBL = new CustomerBL();
-                int itemCount;
-
-
 
                 try
                 {
@@ -609,7 +721,6 @@ namespace PL_Console
 
                     Console.WriteLine(ex.Message);
                     throw;
-
                 }
                 if (it == null)
                 {
@@ -620,9 +731,9 @@ namespace PL_Console
                     Console.WriteLine(row);
                     Console.WriteLine("DETAIL OF ITEM");
                     Console.WriteLine(row);
-                    var table = new ConsoleTable("ID", "ITEM NAME", "ITEM PRICE", "SIZE");
+                    var table = new ConsoleTable("ID", "ITEM NAME", "PRICE OF SIZE M", "PRICE OF SIZE X", "PRICE OF SIZE XL");
 
-                    table.AddRow(it.ItemID, it.ItemName, it.ItemPrice, it.Size);
+                    table.AddRow(it.ItemID, it.ItemName, FomatMoney(it.ItemPrice), FomatMoney(it.ItemPrice + 5), FomatMoney(it.ItemPrice + 10));
 
                     table.Write();
                     Console.WriteLine("DESCRIPTION : ");
@@ -653,8 +764,6 @@ namespace PL_Console
                             string selection;
                             int temp = 0;
                             int index = 0;
-
-
                             if (litems != null)
                             {
                                 for (int i = 0; i < litems.Count; i++)
@@ -667,11 +776,9 @@ namespace PL_Console
                                     }
                                     else
                                     {
-
                                     }
                                 }
                             }
-
                             if (temp == 1)
                             {
                                 Console.Write("This item already exists in the shopping cart, do you want increase  quantity ?(Y/N):");
@@ -724,30 +831,56 @@ namespace PL_Console
                                         continue;
                                 }
                             }
-                            Console.Write("Enter quantity of item:");
-                            try
+                            while (true)
                             {
-                                itemCount = int.Parse(Console.ReadLine());
-                                it.ItemCount = itemCount;
+                                int Count = 0;
+                                Console.Write("Enter quantity of item:");
+                                bool a = Int32.TryParse(Console.ReadLine(), out Count);
+                                if (Count > 0 && Count < 50)
+                                {
+                                    it.ItemCount = Count;
+
+                                    break;
+                                }
+                                else if (!a)
+                                {
+                                    Console.WriteLine("\nYou must enter integer and greater than 0 and less than 50 !\n");
+                                    continue;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("\nYou must enter integer and greater than 0 and less than 50 !\n");
+                                    continue;
+                                }
 
                             }
-                            catch (System.Exception)
+                            while (true)
                             {
-                                Console.WriteLine("\nYou must enter integer and greater 0 !\n");
-                                continue;
+                                Console.Write("Enter size of item: ");
+                                it.Size = Console.ReadLine().ToUpper();
+                                if (it.Size != "M" && it.Size != "X" && it.Size != "XL")
+                                {
+                                    Console.WriteLine("Size of item must be M,X,XL");
+                                    Console.ReadKey();
+                                    continue;
+                                }
+                                else
+                                {
+                                    if (it.Size == "X")
+                                    {
+                                        it.ItemPrice += 5;
+                                    }
+                                    if (it.Size == "XL")
+                                    {
+                                        it.ItemPrice += 10;
+                                    }
+                                    break;
+                                }
                             }
-                            if (it.ItemCount > 0)
-                            {
-                                break;
-                            }
-                            else
-                            {
-                                Console.WriteLine("\nYou must enter integer and greater 0 !\n");
-                                continue;
-                            }
+                            AddToCart(it);
+                            break;
                         }
-                        // li.Add(it);
-                        AddToCart(it);
+
                         break;
                     case "2":
                         MenuAfterLogin();
@@ -842,10 +975,10 @@ namespace PL_Console
                 Console.WriteLine("Customer Name : {0}", customer.CusName);
                 Console.WriteLine("Customer Address : {0}", customer.Address);
                 Console.WriteLine("Customer Phone Number: {0}", customer.PhoneNumber);
-                Console.WriteLine("Money : {0}", customer.Money);
+
                 string choice = null;
                 Console.WriteLine("\n" + row + "\n");
-                Console.WriteLine("1. Go to menu");
+                Console.WriteLine("1. Show items");
                 Console.WriteLine("2. Back");
                 Console.Write("Please enter your selection: ");
                 choice = Console.ReadLine();
@@ -872,7 +1005,6 @@ namespace PL_Console
                 }
             }
         }
-
         public void LoginMenu()
         {
 
@@ -919,12 +1051,10 @@ namespace PL_Console
                 }
             }
         }
-        public void ShowBill(int? orderId)
+        public void ShowBill(int orderId)
         {
             while (true)
             {
-
-
                 OrderBL oBL = new OrderBL();
                 Orders order = new Orders();
                 try
@@ -938,24 +1068,34 @@ namespace PL_Console
                     Console.ReadKey();
                     break;
                 }
-
+                decimal AmountPay = 0;
                 Console.Clear();
                 Console.WriteLine(row);
                 Console.WriteLine(" VTCA CAFFE");
                 Console.WriteLine(row);
                 Console.WriteLine("\n                           BILL                       \n");
-                Console.WriteLine(" Order date        : {0}", order.OrderDate);
+                Console.WriteLine(" Order date        : {0}", order.OrderDate.ToString("dddd, dd MMMM yyyy"));
                 Console.WriteLine(" Order ID          : {0}", order.OrderID);
+                Console.WriteLine(" Customer name     : {0}", customer.CusName);
 
-                var table = new ConsoleTable("ITEM NAME         ", "PRICE            ", "QUANTITY", "TOTAL             ");
+                var table = new ConsoleTable("ITEM NAME", "PRICE ", "QUANTITY", "SIZE", "TOTAL");
                 foreach (var item in order.Items)
                 {
+                    if (item.Size == "X")
+                    {
+                        item.ItemPrice += 5;
+                    }
+                    if (item.Size == "XL")
+                    {
+                        item.ItemPrice += 10;
+                    }
                     Decimal TOTAL = item.ItemPrice * item.ItemCount;
-                    table.AddRow(item.ItemName, item.ItemPrice, item.ItemCount, TOTAL);
+                    AmountPay += TOTAL;
+                    table.AddRow(item.ItemName, FomatMoney(item.ItemPrice), item.ItemCount, item.Size, FomatMoney(TOTAL));
+
                 }
                 table.Write();
-
-                Console.WriteLine("\n Amount : {0}\n", amount);
+                Console.WriteLine("\n Amount : {0}\n", AmountPay);
                 Console.WriteLine("Press anykey to back");
                 Console.ReadKey();
                 break;
@@ -972,7 +1112,7 @@ namespace PL_Console
                 string chose;
                 Console.WriteLine(row);
                 Console.WriteLine("1. View Infomation");
-                Console.WriteLine("2. Go to menu");
+                Console.WriteLine("2. Show Items");
                 Console.WriteLine("3. Show Cart");
                 Console.WriteLine("4. Show bought order");
                 Console.WriteLine("5. Log out");
@@ -995,7 +1135,7 @@ namespace PL_Console
                         ShowOrderBought(customer.CusID);
                         break;
                     case "5":
-                        LoginMenu();
+                        MainMenu();
                         break;
                     default:
                         Console.WriteLine("Input invalid !");
@@ -1003,7 +1143,12 @@ namespace PL_Console
                 }
             }
         }
-
+        public string FomatMoney(decimal money)
+        {
+            string a;
+            a = money.ToString("C3", CultureInfo.CurrentCulture);
+            return a;
+        }
 
     }
 }
