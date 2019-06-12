@@ -53,7 +53,7 @@ namespace PL_Console
             {
                 if (choice != "Y" && choice != "N")
                 {
-                    Console.Write("You can only enter (y / s): ");
+                    Console.Write("You can only enter (Y/N): ");
                     choice = Console.ReadLine().ToUpper();
                     continue;
                 }
@@ -198,7 +198,10 @@ namespace PL_Console
                         break;
                     }
                     decimal AmountPay = 0;
-                    // items = itemsa;
+                    Console.WriteLine(row);
+                    Console.WriteLine("SHOPPING CART");
+                    Console.WriteLine(row);
+
                     var table = new ConsoleTable("ID", "ITEM NAME", "QUANTITY", "PRICE", "SIZE", "TOTLE");
                     foreach (Items itema in itemsa)
                     {
@@ -212,7 +215,7 @@ namespace PL_Console
                     Console.WriteLine("\nAmount : {0}\n", AmountPay);
                     Console.WriteLine("1. Pay");
                     Console.WriteLine("2. Delete shopping cart");
-                    Console.WriteLine("3. Delete a item");
+                    Console.WriteLine("3. Delete an item");
                     Console.WriteLine("4. Back");
                     string choice;
                     Console.Write("Enter your selection : ");
@@ -223,33 +226,43 @@ namespace PL_Console
                             CreateOrder(or, itemsa);
                             break;
                         case "2":
-                            try
+                            Console.Write("Do you want delete shopping card (Y/N)");
+                            string check = checkYN().ToUpper();
+                            if (check == "Y")
                             {
-                                // Check if file exists with its full path    
-                                if (File.Exists(("shoppingcart" + customer.UserName + ".dat")))
+                                try
                                 {
-                                    // If file found, delete it    
-                                    File.Delete(("shoppingcart" + customer.UserName + ".dat"));
-                                    items.Clear();
-
+                                    // Check if file exists with its full path    
+                                    if (File.Exists(("shoppingcart" + customer.UserName + ".dat")))
+                                    {
+                                        // If file found, delete it    
+                                        File.Delete(("shoppingcart" + customer.UserName + ".dat"));
+                                        items.Clear();
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Cart not found");
+                                    }
                                 }
-                                else
+                                catch (IOException ioExp)
                                 {
-                                    Console.WriteLine("Cart not found");
+                                    Console.WriteLine(ioExp.Message);
                                 }
+                                break;
                             }
-                            catch (IOException ioExp)
+                            else
                             {
-                                Console.WriteLine(ioExp.Message);
-                            }
 
+                            }
                             break;
                         case "3":
                             int deleteId;
                             int temp = 1;
-                            // int i = 0;
+
+
                             while (true)
                             {
+
                                 Console.Write("Enter the item ID you want to delete or enter 0 to back:");
                                 try
                                 {
@@ -258,8 +271,6 @@ namespace PL_Console
                                     {
                                         break;
                                     }
-
-
                                     for (int i = 0; i < itemsa.Count; i++)
                                     {
                                         if (itemsa[i].ItemID == deleteId)
@@ -283,6 +294,28 @@ namespace PL_Console
                                             {
                                                 Console.WriteLine(ex);
                                             }
+                                        }
+
+                                    }
+                                    if (itemsa.Count < 1)
+                                    {
+                                        try
+                                        {
+                                            // Check if file exists with its full path    
+                                            if (File.Exists(("shoppingcart" + customer.UserName + ".dat")))
+                                            {
+                                                // If file found, delete it    
+                                                File.Delete(("shoppingcart" + customer.UserName + ".dat"));
+                                                items.Clear();
+                                            }
+                                            else
+                                            {
+                                                Console.WriteLine("Cart not found");
+                                            }
+                                        }
+                                        catch (IOException ioExp)
+                                        {
+                                            Console.WriteLine(ioExp.Message);
                                         }
                                     }
                                     if (temp == 1)
@@ -361,9 +394,6 @@ namespace PL_Console
                     case "1":
                         while (true)
                         {
-
-                            Console.WriteLine("The money you must pay : " + amount);
-                            Console.WriteLine("your card have: " + customer.Money);
                             Console.WriteLine("1. Confirm ");
                             Console.WriteLine("2. Back");
                             Console.Write("Enter your selection :");
@@ -404,6 +434,18 @@ namespace PL_Console
                             Console.WriteLine("The money you must pay : " + amount);
                             Console.Write("Enter amount must pay:");
                             bool c = Decimal.TryParse(Console.ReadLine(), out cash);
+                            if (c == false)
+                            {
+                                Console.WriteLine("You must enter number ! press anykey to continue");
+                                Console.ReadKey();
+                                continue;
+                            }
+                            if (cash == amount)
+                            {
+                                a = ordersbl.CreateOrder(or);
+                                items.Clear();
+                                Pay(or);
+                            }
                             if (cash < amount)
                             {
                                 Console.Write("Amout must greater than totle price, do you continue (Y/N)");
@@ -426,6 +468,7 @@ namespace PL_Console
                                 items.Clear();
                                 Pay(or);
                             }
+
                         }
                         break;
                     case "3":
@@ -464,7 +507,7 @@ namespace PL_Console
                 {
                     Console.WriteLine(ex.Message);
                     Console.ReadKey();
-                    throw;
+                    continue;
                 }
 
                 if (orders.Count == 0)
@@ -552,7 +595,7 @@ namespace PL_Console
 
                 string selction;
 
-                Console.WriteLine("1. Select item.");
+                Console.WriteLine("1. View item detail.");
                 Console.WriteLine("2. Search item.");
                 Console.WriteLine("3. Back.");
                 Console.Write("Enter your selection: ");
@@ -737,7 +780,8 @@ namespace PL_Console
 
                     table.Write();
                     Console.WriteLine("DESCRIPTION : ");
-                    Console.WriteLine(it.ItemDescription);
+                    WriteLineWordWrap(it.ItemDescription);
+                    
                 }
                 string select;
                 Console.WriteLine("\n" + row + "\n");
@@ -749,86 +793,116 @@ namespace PL_Console
                 switch (select)
                 {
                     case "1":
-                        List<Items> litems = null;
-                        if (File.Exists(("shoppingcart" + customer.UserName + ".dat")))
-                        {
-                            FileStream f = new FileStream("shoppingcart" + customer.UserName + ".dat", FileMode.OpenOrCreate, FileAccess.ReadWrite);
-                            BinaryReader br = new BinaryReader(f);
-                            string a = br.ReadString();
-                            litems = JsonConvert.DeserializeObject<List<Items>>(a);
-                            br.Close();
-                            f.Close();
-                        }
+
                         while (true)
                         {
-                            string selection;
-                            int temp = 0;
-                            int index = 0;
-                            if (litems != null)
+                            Console.Write("Enter size of item: ");
+                            it.Size = Console.ReadLine().ToUpper();
+                            if (it.Size != "M" && it.Size != "X" && it.Size != "XL")
                             {
-                                for (int i = 0; i < litems.Count; i++)
+                                Console.WriteLine("Size of item must be M,X,XL");
+                                Console.ReadKey();
+                                continue;
+                            }
+                            List<Items> litems = null;
+                            if (File.Exists(("shoppingcart" + customer.UserName + ".dat")))
+                            {
+                                FileStream f = new FileStream("shoppingcart" + customer.UserName + ".dat", FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                                BinaryReader br = new BinaryReader(f);
+                                string a = br.ReadString();
+                                litems = JsonConvert.DeserializeObject<List<Items>>(a);
+                                br.Close();
+                                f.Close();
+                            }
+                            while (true)
+                            {
+                                string selection;
+                                int temp = 0;
+                                int index = 0;
+                                if (litems != null)
                                 {
-                                    if (it.ItemID == litems[i].ItemID)
+                                    for (int i = 0; i < litems.Count; i++)
                                     {
-                                        temp += 1;
-                                        index = i;
-                                        break;
-                                    }
-                                    else
-                                    {
+                                        if (it.Size == litems[i].Size)
+                                        {
+                                            temp += 1;
+                                            index = i;
+                                            break;
+                                        }
+                                        else
+                                        {
+                                        }
                                     }
                                 }
-                            }
-                            if (temp == 1)
-                            {
-                                Console.Write("This item already exists in the shopping cart, do you want increase  quantity ?(Y/N):");
-                                selection = Console.ReadLine().ToUpper();
-                                int add;
-                                switch (selection)
+                                if (temp == 1)
                                 {
-                                    case "Y":
-                                        while (true)
-                                        {
-                                            Console.Write("Enter the quantity you want to add: ");
-                                            try
+                                    Console.Write("This item already exists in the shopping cart, do you want increase  quantity ?(Y/N):");
+                                    selection = Console.ReadLine().ToUpper();
+                                    int add;
+                                    switch (selection)
+                                    {
+                                        case "Y":
+                                            while (true)
                                             {
-                                                add = int.Parse(Console.ReadLine());
-                                                litems[index].ItemCount += add;
-
-                                                string fileName = "shoppingcart" + customer.UserName + ".dat";
-                                                File.Delete(fileName);
-                                                string sJSONResponse = JsonConvert.SerializeObject(litems);
-                                                BinaryWriter bw;
+                                                Console.Write("Enter the quantity you want to add: ");
                                                 try
                                                 {
-                                                    FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-                                                    bw = new BinaryWriter(fs);
-                                                    bw.Write((string)(object)sJSONResponse);
-                                                    fs.Close();
+                                                    add = int.Parse(Console.ReadLine());
+                                                    litems[index].ItemCount += add;
+
+                                                    string fileName = "shoppingcart" + customer.UserName + ".dat";
+                                                    File.Delete(fileName);
+                                                    string sJSONResponse = JsonConvert.SerializeObject(litems);
+                                                    BinaryWriter bw;
+                                                    try
+                                                    {
+                                                        FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                                                        bw = new BinaryWriter(fs);
+                                                        bw.Write((string)(object)sJSONResponse);
+                                                        fs.Close();
+                                                    }
+                                                    catch (System.Exception)
+                                                    {
+                                                        Console.WriteLine("Disconnect from database !");
+                                                    }
+                                                    Console.WriteLine("\nAdd quantity success !\n");
+
+                                                    break;
                                                 }
                                                 catch (System.Exception)
                                                 {
-                                                    Console.WriteLine("Disconnect from database !");
+                                                    Console.WriteLine("Item id must be integer and greater 0 !");
+                                                    continue;
                                                 }
-                                                Console.WriteLine("\nAdd quantity success !\n");
-
-                                                break;
                                             }
-                                            catch (System.Exception)
-                                            {
-                                                Console.WriteLine("Item id must be integer and greater 0 !");
-                                                continue;
-                                            }
-                                        }
 
-                                        MenuAfterLogin();
-                                        break;
-                                    case "N":
-                                        MenuAfterLogin();
-                                        break;
-                                    default:
-                                        Console.Write("You must enter Y/N \n");
-                                        continue;
+                                            MenuAfterLogin();
+                                            break;
+                                        case "N":
+                                            MenuAfterLogin();
+                                            break;
+                                        default:
+                                            Console.Write("You must enter Y/N \n");
+                                            continue;
+                                    }
+                                }
+                                if (it.Size != "M" && it.Size != "X" && it.Size != "XL")
+                                {
+                                    Console.WriteLine("Size of item must be M,X,XL");
+                                    Console.ReadKey();
+                                    continue;
+                                }
+                                else
+                                {
+                                    if (it.Size == "X")
+                                    {
+                                        it.ItemPrice += 5;
+                                    }
+                                    if (it.Size == "XL")
+                                    {
+                                        it.ItemPrice += 10;
+                                    }
+                                    break;
                                 }
                             }
                             while (true)
@@ -854,32 +928,10 @@ namespace PL_Console
                                 }
 
                             }
-                            while (true)
-                            {
-                                Console.Write("Enter size of item: ");
-                                it.Size = Console.ReadLine().ToUpper();
-                                if (it.Size != "M" && it.Size != "X" && it.Size != "XL")
-                                {
-                                    Console.WriteLine("Size of item must be M,X,XL");
-                                    Console.ReadKey();
-                                    continue;
-                                }
-                                else
-                                {
-                                    if (it.Size == "X")
-                                    {
-                                        it.ItemPrice += 5;
-                                    }
-                                    if (it.Size == "XL")
-                                    {
-                                        it.ItemPrice += 10;
-                                    }
-                                    break;
-                                }
-                            }
                             AddToCart(it);
                             break;
                         }
+
 
                         break;
                     case "2":
@@ -1095,7 +1147,7 @@ namespace PL_Console
 
                 }
                 table.Write();
-                Console.WriteLine("\n Amount : {0}\n", AmountPay);
+                Console.WriteLine("\n Amount : {0} (Including VAT) \n", AmountPay);
                 Console.WriteLine("Press anykey to back");
                 Console.ReadKey();
                 break;
@@ -1148,6 +1200,34 @@ namespace PL_Console
             string a;
             a = money.ToString("C3", CultureInfo.CurrentCulture);
             return a;
+        }
+        public static void WriteLineWordWrap(string paragraph, int tabSize = 8)
+        {
+            string[] lines = paragraph
+                .Replace("\t", new String(' ', tabSize))
+                .Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string process = lines[i];
+                List<String> wrapped = new List<string>();
+
+                while (process.Length > Console.WindowWidth)
+                {
+                    int wrapAt = process.LastIndexOf(' ', Math.Min(Console.WindowWidth - 1, process.Length));
+                    if (wrapAt <= 0) break;
+
+                    wrapped.Add(process.Substring(0, wrapAt));
+                    process = process.Remove(0, wrapAt + 1);
+                }
+
+                foreach (string wrap in wrapped)
+                {
+                    Console.WriteLine(wrap);
+                }
+
+                Console.WriteLine(process);
+            }
         }
 
     }

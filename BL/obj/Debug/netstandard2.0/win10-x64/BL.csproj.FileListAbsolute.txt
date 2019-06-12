@@ -1,0 +1,15 @@
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\BL\bin\Debug\netstandard2.0\win10-x64\ConnectionString.txt
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\BL\bin\Debug\netstandard2.0\win10-x64\BL.deps.json
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\BL\bin\Debug\netstandard2.0\win10-x64\BL.dll
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\BL\bin\Debug\netstandard2.0\win10-x64\BL.pdb
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\BL\bin\Debug\netstandard2.0\win10-x64\DAL.dll
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\BL\bin\Debug\netstandard2.0\win10-x64\Persistence.dll
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\BL\bin\Debug\netstandard2.0\win10-x64\DAL.pdb
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\BL\bin\Debug\netstandard2.0\win10-x64\Persistence.pdb
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\BL\obj\Debug\netstandard2.0\win10-x64\BL.csprojAssemblyReference.cache
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\BL\obj\Debug\netstandard2.0\win10-x64\BL.csproj.CoreCompileInputs.cache
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\BL\obj\Debug\netstandard2.0\win10-x64\BL.AssemblyInfoInputs.cache
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\BL\obj\Debug\netstandard2.0\win10-x64\BL.AssemblyInfo.cs
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\BL\obj\Debug\netstandard2.0\win10-x64\BL.csproj.CopyComplete
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\BL\obj\Debug\netstandard2.0\win10-x64\BL.dll
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\BL\obj\Debug\netstandard2.0\win10-x64\BL.pdb

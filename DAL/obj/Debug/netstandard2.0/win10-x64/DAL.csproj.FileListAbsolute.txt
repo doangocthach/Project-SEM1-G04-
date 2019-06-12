@@ -1,0 +1,13 @@
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\DAL\bin\Debug\netstandard2.0\win10-x64\ConnectionString.txt
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\DAL\bin\Debug\netstandard2.0\win10-x64\DAL.deps.json
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\DAL\bin\Debug\netstandard2.0\win10-x64\DAL.dll
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\DAL\bin\Debug\netstandard2.0\win10-x64\DAL.pdb
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\DAL\bin\Debug\netstandard2.0\win10-x64\Persistence.dll
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\DAL\bin\Debug\netstandard2.0\win10-x64\Persistence.pdb
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\DAL\obj\Debug\netstandard2.0\win10-x64\DAL.csprojAssemblyReference.cache
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\DAL\obj\Debug\netstandard2.0\win10-x64\DAL.csproj.CoreCompileInputs.cache
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\DAL\obj\Debug\netstandard2.0\win10-x64\DAL.AssemblyInfoInputs.cache
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\DAL\obj\Debug\netstandard2.0\win10-x64\DAL.AssemblyInfo.cs
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\DAL\obj\Debug\netstandard2.0\win10-x64\DAL.csproj.CopyComplete
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\DAL\obj\Debug\netstandard2.0\win10-x64\DAL.dll
+C:\Users\goldk\OneDrive\Desktop\ProjectSEM1-Copy\Project-SEM1-G04-\DAL\obj\Debug\netstandard2.0\win10-x64\DAL.pdb

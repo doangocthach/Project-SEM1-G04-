@@ -16,8 +16,8 @@ Money decimal(10,2)
 );
 
 insert into Customers(CusName, userName,userPassword,Address,PhoneNumber,Money) values
-('Đoàn Ngọc Thạch','Thach','1','84 Kim Ngưu, Hai Bà Trưng , Hà Nội','0392127339',1000.00),
-('Phạm Đức Toàn','Toan123','1','Tân Tiến, Hải Dương','01213309289',1000.00);
+('Doan Ngoc Thach','Thach','1','84 Kim Nguu, Ha Ba Trung, Ha Noi','0392127339',1000.00),
+('Pham Duc Toan','Toan123','1','Tan Tien, Hai Duong','01213309289',1000.00);
 
 
 
@@ -41,23 +41,25 @@ Size varchar(10)
 );
 
 insert into Items(ItemName, ItemPrice,ItemDescription,Size) values
-('Caffe đen','15.00','Caffe đen với hương vị đậm đà , được chọn lọc từ loại caffe hảo hạn nguyên chất mang đến cho bạn 
-trải nghiệm khác biệt . ','M,X,XL'),
- ('Caffe nâu','15.00','Caffe hảo hạng với vị nữa ngọt bùi , sữa cùng với vị  đắng của caffe sẽ mang đến cho bạn một trải nghiệm khó quên  ','M,X,XL'),
- ('Caffe hương chồn','25.00',' là loại caffe mà có thể bạn đã nghe ở nhiều nơi, với quy trình làm khá cầu kì, vẫn giữ được hương vị caffe vốn có , vị bùi bùi nồng nồng,
-  thật tuyệt vời phải không nào ? ','M,X,XL'),
- ('Caffe rượu','20.00','Sự độc đáo kết hợp từ rượu với caffe , thật thú vị phải không nào ? ','M,X,XL'),
- ('Caffe đen hạt rang ','20.00','Mộc mạc mà đơn giản , có lẽ đây  là điều bạn đang tìm kiếm . ','M,X,XL'),
- ('Trà lipton','10.00','Có lẽ không phải ai cũng uống được caffe , một chú dịu nhẹ nhàng với một cốc lipton, tại sao không ? ','M,X,XL'),
- ('Hoa quả thập cẩm','25.00','Gồm táo, cam, mận, xoài giúp bạn có gì đó tráng miệng sau khi thử 1 ly caffe và ngẫm nghĩ quá nhiều
- một chút chua và ngọt thanh sẽ giúp bạn thoải mái hơn . ','M,L,XL');
+('Black caffe','15.00',' Black caffeine with a strong flavor, selected from a pure, high quality caffeine that brings you experience different. ','M,X,XL'),
+ ('Brown caffe','15.00','Fine coffee with a sweet taste, milk and bitterness of caffeine will give you an unforgettable experience.','M,X,XL'),
+ ('Mink incense cafe','25.00',' is the kind of caffeine that you may have heard in many places, with the process of making it quite picky, still retaining the inherent caffeine flavor, the concentration of fleshy concentration, Is it amazing?','M,X,XL'),
+ ('Wine cafe','20.00','The unique combination of wine and coffee, is it interesting?','M,X,XL'),
+ ('Black coffee roasted nuts','20.00','Rustic but simple, maybe this is what you are looking for.','M,X,XL'),
+ ('Lipton ','10.00','Perhaps not everyone can drink coffee, a gentle gentleman with a cup of lipton, why not ?','M,X,XL'),
+ ('Mixed fruit','25.00','Including apples, oranges, plums and mangoes to help you have something dessert after trying 1 cup of caffeine and thinking too much. A little sour and sweet bar will make you more comfortable. ','M,L,XL'),
+ ('Oolong tea','15.00','A little light, cool bar from nature will help you less heavy in the roll? ','M,X,XL'),
+ ('Chrysanthemum tea','15.00','Gentle tea, not sweet, not bitter, and sitting down and doing a little will make your mood better.','M,X,XL'),
+ ('Culi caffe','25.00','Culi cafe on the left has only one grain. It has a bitter taste, passionate fragrance, high caffeine content, comparable black water, is it interesting ?','M,X,XL'),
+ ('Moka caffe ','30.00','Moka coffee is one of the famous coffee lines belonging to Arabica genus. In Vietnam, moke is a rare coffee, always priced higher than other types. Moka seeds are bigger and more beautiful than other varieties. Its aroma is very special, very luxurious, ecstatic, slightly acidic in an elegant way, for discerning people.','M,X,XL'),
+ ('Robusta caffe  ','20.00','Robusta coffee is also known as Robusta coffee. This type of coffee is very suitable for the climate and soil in the Central Highlands of Vietnam, reaching 90-95% of total coffee production annually. This coffee has a strong, non-sour, high caffeine flavor, suitable for Vietnamese tastes.','M,X,XL');
 
 create table if not exists OrderDetail(
 OrderID int,
 ItemID int ,
 ItemCount int,
 Size varchar(10),
-constraint pk_OrderDetail primary key(OrderID,ItemID),
+constraint pk_OrderDetail primary key(OrderID,ItemID,Size),
 constraint fk_OrderDetail_Orders foreign key(OrderID) references Orders(OrderID),
 constraint fk_OrderDetail_Items foreign key(ItemID) references Items(ItemID)
 );
